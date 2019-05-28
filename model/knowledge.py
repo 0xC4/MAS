@@ -21,8 +21,10 @@ class Relation (Enum):
     IS_LOW          = 3
 
 class Fact:
-    def __init__(self, target, relation, agent):
+    def __init__(self, target, relation, dst_agent):
         self.target   = target
         self.relation = relation
-        self.agent    = agent
+        self.dst_agent= dst_agent
     
+    def __repr__(self):
+        return "agent{}-{}-{}".format(self.dst_agent.name, self.target, self.relation)
