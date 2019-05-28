@@ -1,0 +1,3 @@
+[submodule "mlsolver"]
+	path = mlsolver
+	url = https://github.com/erohkohl/mlsolver.git
