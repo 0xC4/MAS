@@ -5,23 +5,28 @@ import random
 P_AMOUNT_AGENTS = 3
 P_AMOUNT_CARDS  = P_AMOUNT_AGENTS * 2
 
+def print_world(world, vocab):
+    true_idxs = [idx for idx, truth_value in enumerate(world) if truth_value == True] 
+    
+    facts = [vocab[i] for i in true_idxs]
+    for i in range (int(len(facts) / 2)):
+        print (str(facts[i*2:i*2+2]))
+
 
 knowledgestructure = KnowledgeStructure(amount_agents=P_AMOUNT_AGENTS, amount_cards=P_AMOUNT_CARDS)
 
-print (knowledgestructure.observables[1])
-
 print (knowledgestructure)
 
-knowledgestructure.announce(0, Announcements.BOTH_EVEN)
-knowledgestructure.announce(1, Announcements.ONE_ODD)
-knowledgestructure.announce(2, Announcements.ONE_EVEN)
+print_world(knowledgestructure.initial_world, knowledgestructure.vocab)
 
-for idx, world in enumerate(knowledgestructure.valid_worlds):
-    print()
-    print("Possible world {}/{}".format(idx + 1, len(knowledgestructure.valid_worlds)))
-    true_idxs = [idx for idx, truth_value in enumerate(world) if truth_value == True] 
-    
-    facts = [knowledgestructure.vocab[i] for i in true_idxs]
-    for i in range (int(len(facts) / 2)):
-        print (str(facts[i*2:i*2+2]))
-    input()
+for agent in range(P_AMOUNT_AGENTS):
+    print ("[P{}->0] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 0)))
+    print ("[P{}->1] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 1)))
+    print ("[P{}->2] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 2)))
+
+knowledgestructure.announce(0, knowledgestructure.allowed_announcements(0, 0)[0])
+
+for agent in range(P_AMOUNT_AGENTS):
+    print ("[P{}->0] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 0)))
+    print ("[P{}->1] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 1)))
+    print ("[P{}->2] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 2)))
