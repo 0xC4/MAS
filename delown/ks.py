@@ -1,5 +1,10 @@
 import itertools
 import random
+from enum import Enum
+
+class Announcements(Enum):
+    ONE_ODD     = 0
+    ONE_EVEN    = 1
 
 class KnowledgeStructure:
     def __init__ (self, amount_agents, amount_cards):
@@ -9,6 +14,13 @@ class KnowledgeStructure:
         self.valid_worlds   = self.get_valid_worlds()
         self.initial_world  = self.pick_initial_world(self.valid_worlds)
         self.observables    = self.make_agents_observables(self.amount_agents, self.initial_world, self.vocab)
+
+    def __repr__(self):
+        return """Model: 
+        Amount agents:   {}
+        Amount cards:    {}
+        Prop. Atoms:     {}
+        Amt val. worlds: {}""".format(self.amount_agents, self.amount_cards, self.vocab, len(self.valid_worlds))
 
     # Set of all propositional atoms
     def generate_vocab (self, amt_agents, amt_cards):
@@ -46,6 +58,35 @@ class KnowledgeStructure:
             if cnt != 1:
                 return False
         return True
+
+    # AT LEAST ONE odd card
+    def one_odd_card_law(self, agent_idx, world):
+        agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+        oddagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 0] # ODD is even since index 0 corresponds with 1
+        if sum(oddagentworld) > 0:
+            return True
+        return False
+
+    # AT LEAST ONE even card
+    def one_even_card_law(self, agent_idx, world):
+        agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+        oddagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 1] # EVEN is odd since index 0 corresponds with 1
+        if sum(oddagentworld) > 0:
+            return True
+        return False
+
+    # Make announcement and apply the new law
+    def announce(self, agent_idx, announcement_type):
+        previous_worlds = len(self.valid_worlds)
+
+        if announcement_type == Announcements.ONE_ODD:
+            print ("> Agent {} announces he has one odd card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.one_odd_card_law(agent_idx, w)]
+        if announcement_type == Announcements.ONE_EVEN:
+            print ("> Agent {} announces he has one even card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.one_even_card_law(agent_idx, w)]
+        print (">> Worlds removed:   {}".format(previous_worlds - len(self.valid_worlds)))
+        print (">> Worlds remaining: {}".format(len(self.valid_worlds)))
 
     # Create agents and their respective observables
     def make_agents_observables(self, amount_agents, init_world, vocab):
