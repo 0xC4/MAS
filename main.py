@@ -19,14 +19,20 @@ print (knowledgestructure)
 
 print_world(knowledgestructure.initial_world, knowledgestructure.vocab)
 
-for agent in range(P_AMOUNT_AGENTS):
-    print ("[P{}->0] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 0)))
-    print ("[P{}->1] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 1)))
-    print ("[P{}->2] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 2)))
+remainingworlds = []
 
-knowledgestructure.announce(0, knowledgestructure.allowed_announcements(0, 0)[0])
+turn_agent = -1
 
-for agent in range(P_AMOUNT_AGENTS):
-    print ("[P{}->0] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 0)))
-    print ("[P{}->1] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 1)))
-    print ("[P{}->2] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 2)))
+while remainingworlds != 1:
+    turn_agent = (turn_agent + 1) % 3
+
+    for agent in range(P_AMOUNT_AGENTS):
+        print ("[P{}->0] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 0)))
+        print ("[P{}->1] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 1)))
+        print ("[P{}->2] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 2)))
+
+    knowledgestructure.announce(turn_agent, random.sample(knowledgestructure.allowed_announcements(turn_agent, turn_agent), 1)[0])
+
+    remainingworlds = len(knowledgestructure.get_agent_valid_worlds(turn_agent))
+
+print ("Winner: Player {}".format("abcdefg"[turn_agent]))
