@@ -1,24 +1,11 @@
-from model.agent import Agent
-from model.knowledge import Fact, ReferedObject, Relation, AllPossibleFacts
-from random import shuffle
-from parameters import *
+from delown.ks import KnowledgeStructure
+import itertools
+import random
 
-# Initialize deck of cards
-deck = list(range(M_NUM_CARDS))
+P_AMOUNT_AGENTS = 3
+P_AMOUNT_CARDS  = P_AMOUNT_AGENTS * 2
 
-# Shuffle the deck
-shuffle(deck)
 
-# Create some agents
-agents = [Agent(str(x)) for x in range (M_NUM_AGENTS)]
+knowledgestructure = KnowledgeStructure(amount_agents=P_AMOUNT_AGENTS, amount_cards=P_AMOUNT_CARDS)
 
-for agent in agents:
-    agent.give_card(deck.pop())
-    agent.give_card(deck.pop())
-    agent.facts = AllPossibleFacts(agent, agent.cards)
- 
-# Create the knowledge model
-f = Fact(ReferedObject.ONE_CARD, Relation.IS_EVEN, agents[2])
-
-for agent in agents:
-    print(agent)
+print (knowledgestructure.observables[1])
