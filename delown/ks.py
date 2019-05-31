@@ -5,6 +5,8 @@ from enum import Enum
 class Announcements(Enum):
     ONE_ODD     = 0
     ONE_EVEN    = 1
+    BOTH_ODD    = 2
+    BOTH_EVEN   = 3
 
 class KnowledgeStructure:
     def __init__ (self, amount_agents, amount_cards):
@@ -70,8 +72,24 @@ class KnowledgeStructure:
     # AT LEAST ONE even card
     def one_even_card_law(self, agent_idx, world):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
-        oddagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 1] # EVEN is odd since index 0 corresponds with 1
-        if sum(oddagentworld) > 0:
+        evenagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 1] # EVEN is odd since index 0 corresponds with 1
+        if sum(evenagentworld) > 0:
+            return True
+        return False
+
+    # BOTH ODD
+    def both_odd_card_law(self, agent_idx, world):
+        agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+        oddagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 0] # ODD is EVEN since index 0 corresponds with 1
+        if sum(oddagentworld) == 2:
+            return True
+        return False
+
+    # BOTH EVEN
+    def both_even_card_law(self, agent_idx, world):
+        agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+        oddagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 1] # EVEN is ODD since index 0 corresponds with 1
+        if sum(oddagentworld) == 2:
             return True
         return False
 
@@ -82,9 +100,19 @@ class KnowledgeStructure:
         if announcement_type == Announcements.ONE_ODD:
             print ("> Agent {} announces he has one odd card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.one_odd_card_law(agent_idx, w)]
+
         if announcement_type == Announcements.ONE_EVEN:
             print ("> Agent {} announces he has one even card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.one_even_card_law(agent_idx, w)]
+
+        if announcement_type == Announcements.BOTH_ODD:
+            print ("> Agent {} announces he has both odd cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.both_odd_card_law(agent_idx, w)]
+
+        if announcement_type == Announcements.BOTH_EVEN:
+            print ("> Agent {} announces he has both even cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.both_even_card_law(agent_idx, w)]
+
         print (">> Worlds removed:   {}".format(previous_worlds - len(self.valid_worlds)))
         print (">> Worlds remaining: {}".format(len(self.valid_worlds)))
 
