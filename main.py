@@ -1,4 +1,4 @@
-from delown.ks import KnowledgeStructure, Announcements
+from ks import KnowledgeStructure, Announcements
 import itertools
 import random
 
