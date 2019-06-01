@@ -2,7 +2,7 @@ from ks import KnowledgeStructure, Announcements
 import itertools
 import random
 
-P_AMOUNT_AGENTS = 4
+P_AMOUNT_AGENTS = 3
 P_AMOUNT_CARDS  = P_AMOUNT_AGENTS * 2
 
 def print_world(world, vocab):
@@ -29,25 +29,38 @@ while remainingworlds != 1: # As long as one player does not have all the knowle
     # Keep moving to the next player
     turn_agent = (turn_agent + 1) % P_AMOUNT_AGENTS
 
+    # The agent has not made an announcement yet
+    announcement_made = False
+
     for agent in range(P_AMOUNT_AGENTS):
         for target_agent in range(P_AMOUNT_AGENTS):
             print ("[P{}->{}] ".format(agent, target_agent) + str(knowledgestructure.allowed_announcements(agent, target_agent)))
 
-    possible_announcements = knowledgestructure.allowed_announcements(turn_agent, turn_agent)
+    # Random shuffle the target agents
+    target_agents = list(range(P_AMOUNT_AGENTS))
+    random.shuffle(target_agents)
 
-    # Agent passes round if he cannot make a valid announcement.
-    if len(possible_announcements) < 1:
-        print ("Agent {} cannot make any annoucements and passes.".format(turn_agent))
+    for target_agent in target_agents:
+        possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
+        
+        # Player cannot make an announcement about this target agent
+        if len(possible_announcements) < 1:
+            # Move to next target agent
+            continue
+        
+        # Otherwise make one of the possible announcements about this agent
+        print ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
+        knowledgestructure.announce(target_agent, random.sample(possible_announcements, 1)[0])
+        announcement_made = True
+        break
+    
+    if not announcement_made:
+        print ("Agent {} passes because he cannot make any valid announcements.")
         pass_count += 1
-
-        # If three players pass in a row, quit with no winner
-        if pass_count == P_AMOUNT_AGENTS:
+        if pass_count >= P_AMOUNT_AGENTS:
             turn_agent = -1
             break
         continue
-
-    # Otherwise make a random announcement
-    knowledgestructure.announce(turn_agent, random.sample(possible_announcements, 1)[0])
 
     # If the turn player has only one valid world remaining, he knows everyones cards and wins the game
     remainingworlds = len(knowledgestructure.get_agent_valid_worlds(turn_agent))
