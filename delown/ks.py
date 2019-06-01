@@ -34,6 +34,7 @@ class KnowledgeStructure:
         self.valid_worlds   = self.get_valid_worlds()
         self.initial_world  = self.pick_initial_world(self.valid_worlds)
         self.observables    = self.make_agents_observables(self.amount_agents, self.initial_world, self.vocab)
+        self.prev_announced = []
 
     def __repr__(self):
         return """Model: 
@@ -179,6 +180,9 @@ class KnowledgeStructure:
             print (ANMT + " Agent {} has both high cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.both_high_card_law(agent_idx, w)]
 
+        # Store the announcement in the list of already made announcements
+        self.prev_announced.append(tuple((agent_idx, announcement_type)))
+
         print (INFO + " Worlds removed:   {}".format(previous_worlds - len(self.valid_worlds)))
         print ("    Worlds remaining: {}".format(len(self.valid_worlds)))
         self.print_agent_valid_worlds()
@@ -217,6 +221,11 @@ class KnowledgeStructure:
             print ("    Agent {}: {}".format("abcdefghijklmnopqrstuvwxyz"[agent_idx], len(self.get_agent_valid_worlds(agent_idx))))
 
     def announcement_allowed(self, announcing_agent_idx, target_agent_idx, announcement_type):
+
+        # Don't allow the same announcement about same agent's cards twice
+        if (tuple((target_agent_idx, announcement_type)) in self.prev_announced):
+            return False
+
         if announcing_agent_idx == target_agent_idx:
             worlds = self.get_agent_valid_worlds(announcing_agent_idx)
         else: 
