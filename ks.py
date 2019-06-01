@@ -1,30 +1,8 @@
 import itertools
 import random
 from enum import Enum
+from tqdm import tqdm
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    
-ANMT = bcolors.FAIL + "[A]" + bcolors.ENDC
-INFO = bcolors.OKBLUE + "[I]" + bcolors.ENDC
-VALD = bcolors.WARNING + "[V]" + bcolors.ENDC
-
-class Announcements(Enum):
-    ONE_ODD     = 0
-    ONE_EVEN    = 1
-    BOTH_ODD    = 2
-    BOTH_EVEN   = 3
-    ONE_HIGH    = 4
-    ONE_LOW     = 5
-    BOTH_HIGH   = 6
-    BOTH_LOW    = 7
 
 class KnowledgeStructure:
     def __init__ (self, amount_agents, amount_cards):
@@ -60,7 +38,7 @@ class KnowledgeStructure:
         
         if debug_old: print(num_worlds)
         world_list = []
-        for i in range(num_worlds):
+        for i in tqdm( range(num_worlds)):
             num = i
             single_world = []
             #make all possible worlds
@@ -172,49 +150,7 @@ class KnowledgeStructure:
             return True
         return False
 
-    # Make announcement and apply the new law
-    def announce(self, agent_idx, announcement_type):
-        previous_worlds = len(self.valid_worlds)
-        
-        if announcement_type == Announcements.ONE_ODD:
-            print (ANMT + " Agent {} has one odd card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
-            self.valid_worlds = [w for w in self.valid_worlds if self.one_odd_card_law(agent_idx, w)]
-
-        if announcement_type == Announcements.ONE_EVEN:
-            print (ANMT + " Agent {} has one even card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
-            self.valid_worlds = [w for w in self.valid_worlds if self.one_even_card_law(agent_idx, w)]
-
-        if announcement_type == Announcements.BOTH_ODD:
-            print (ANMT + " Agent {} has both odd cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
-            self.valid_worlds = [w for w in self.valid_worlds if self.both_odd_card_law(agent_idx, w)]
-
-        if announcement_type == Announcements.BOTH_EVEN:
-            print (ANMT + " Agent {} has both even cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
-            self.valid_worlds = [w for w in self.valid_worlds if self.both_even_card_law(agent_idx, w)]
-
-        if announcement_type == Announcements.ONE_LOW:
-            print (ANMT + " Agent {} has one low card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
-            self.valid_worlds = [w for w in self.valid_worlds if self.one_low_card_law(agent_idx, w)]
-
-        if announcement_type == Announcements.ONE_HIGH:
-            print (ANMT + " Agent {} has one high card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
-            self.valid_worlds = [w for w in self.valid_worlds if self.one_high_card_law(agent_idx, w)]
-
-        if announcement_type == Announcements.BOTH_LOW:
-            print (ANMT + " Agent {} has both low cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
-            self.valid_worlds = [w for w in self.valid_worlds if self.both_low_card_law(agent_idx, w)]
-
-        if announcement_type == Announcements.BOTH_HIGH:
-            print (ANMT + " Agent {} has both high cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
-            self.valid_worlds = [w for w in self.valid_worlds if self.both_high_card_law(agent_idx, w)]
-
-        # Store the announcement in the list of already made announcements
-        self.prev_announced.append(tuple((agent_idx, announcement_type)))
-
-        print (INFO + " Worlds removed:   {}".format(previous_worlds - len(self.valid_worlds)))
-        print ("    Worlds remaining: {}".format(len(self.valid_worlds)))
-        self.print_agent_valid_worlds()
-
+    
     # Create agents and their respective observables
     def make_agents_observables(self, amount_agents, init_world, vocab):
         agents = list()

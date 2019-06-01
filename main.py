@@ -1,6 +1,7 @@
 from ks import KnowledgeStructure, Announcements
 import itertools
 import random
+from agent import *
 
 P_AMOUNT_AGENTS = 3
 P_AMOUNT_CARDS  = P_AMOUNT_AGENTS * 2
@@ -12,8 +13,11 @@ def print_world(world, vocab):
     for i in range (int(len(facts) / 2)):
         print (str(facts[i*2:i*2+2]))
 
-
+#create knowledge structure
 knowledgestructure = KnowledgeStructure(amount_agents=P_AMOUNT_AGENTS, amount_cards=P_AMOUNT_CARDS)
+
+#create agents
+agents = [Agent(knowledgestructure) for agent in range(P_AMOUNT_AGENTS)]
 
 print (knowledgestructure)
 
@@ -27,12 +31,12 @@ pass_count = 0
 while remainingworlds != 1: # As long as one player does not have all the knowledge
 
     # Keep moving to the next player
-    turn_agent = (turn_agent + 1) % 3
+    turn_agent = (turn_agent + 1) % P_AMOUNT_AGENTS
 
-    for agent in range(P_AMOUNT_AGENTS):
-        print ("[P{}->0] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 0)))
-        print ("[P{}->1] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 1)))
-        print ("[P{}->2] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 2)))
+    for agent_idx in range(P_AMOUNT_AGENTS):
+        print ("[P{}->0] ".format(agent_idx) + str(knowledgestructure.allowed_announcements(agent_idx, 0)))
+        print ("[P{}->1] ".format(agent_idx) + str(knowledgestructure.allowed_announcements(agent_idx, 1)))
+        print ("[P{}->2] ".format(agent_idx) + str(knowledgestructure.allowed_announcements(agent_idx, 2)))
 
     possible_announcements = knowledgestructure.allowed_announcements(turn_agent, turn_agent)
 
