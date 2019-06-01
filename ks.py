@@ -1,5 +1,6 @@
 import itertools
 import random
+from tqdm import tqdm
 from enum import Enum
 
 class bcolors:
@@ -53,35 +54,19 @@ class KnowledgeStructure:
 
     # All possible permutations of True and False value of propositional atoms for given amount agents and cards
     def generate_all_world_possibilities(self):
-        debug_old = False
-        num_prop = self.amount_agents * self.amount_cards
-        print('number of props:' + str(num_prop))
-        num_worlds = 2**num_prop
+        valid_worlds = []
+        for obs in tqdm(itertools.permutations(range(self.amount_cards)), desc="Generating possible worlds"):
+            world = [False] * self.amount_cards * self.amount_agents
+            for idx, o in enumerate(obs):
+                agent_idx = idx // 2
+                # world[agent_idx*self.amount_cards:agent_idx*self.amount_cards + self.amount_cards])
+                world[o + agent_idx * self.amount_cards] = True
+                if self.apply_state_laws(world):
+                    if world not in valid_worlds:
+                        valid_worlds.append(world)
+        return valid_worlds
+
         
-        if debug_old: print(num_worlds)
-        world_list = []
-        for i in range(num_worlds):
-            num = i
-            single_world = []
-            #make all possible worlds
-            while(num>0):
-                single_world.append(num%2)
-                num = num//2
-            #make worlds all same size
-            while(len(single_world) < num_prop):
-                single_world.append(0)
-            #apply filters:
-            if self.apply_state_laws(single_world):
-                world_list.append(single_world)
-                if debug_old: print(single_world)
-        if debug_old:
-            print(len(world_list))
-            for i in range(6):
-                count = 0
-                for j in range(len(world_list)):
-                    count += world_list[j][i]
-                print(count)
-        return world_list
 
     # Test whether a world is in accordance with the laws, returns false if world is invalid according to rules
     def apply_state_laws(self, world):

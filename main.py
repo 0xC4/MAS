@@ -2,7 +2,7 @@ from ks import KnowledgeStructure, Announcements
 import itertools
 import random
 
-P_AMOUNT_AGENTS = 3
+P_AMOUNT_AGENTS = 4
 P_AMOUNT_CARDS  = P_AMOUNT_AGENTS * 2
 
 def print_world(world, vocab):
@@ -27,12 +27,11 @@ pass_count = 0
 while remainingworlds != 1: # As long as one player does not have all the knowledge
 
     # Keep moving to the next player
-    turn_agent = (turn_agent + 1) % 3
+    turn_agent = (turn_agent + 1) % P_AMOUNT_AGENTS
 
     for agent in range(P_AMOUNT_AGENTS):
-        print ("[P{}->0] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 0)))
-        print ("[P{}->1] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 1)))
-        print ("[P{}->2] ".format(agent) + str(knowledgestructure.allowed_announcements(agent, 2)))
+        for target_agent in range(P_AMOUNT_AGENTS):
+            print ("[P{}->{}] ".format(agent, target_agent) + str(knowledgestructure.allowed_announcements(agent, target_agent)))
 
     possible_announcements = knowledgestructure.allowed_announcements(turn_agent, turn_agent)
 
@@ -42,7 +41,7 @@ while remainingworlds != 1: # As long as one player does not have all the knowle
         pass_count += 1
 
         # If three players pass in a row, quit with no winner
-        if pass_count == 3:
+        if pass_count == P_AMOUNT_AGENTS:
             turn_agent = -1
             break
         continue
