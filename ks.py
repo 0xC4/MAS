@@ -239,10 +239,7 @@ class KnowledgeStructure:
         if (tuple((target_agent_idx, announcement_type)) in self.prev_announced):
             return False
 
-        if announcing_agent_idx == target_agent_idx:
-            worlds = self.get_agent_valid_worlds(announcing_agent_idx)
-        else: 
-            worlds = self.valid_worlds
+        worlds = self.get_agent_valid_worlds(announcing_agent_idx)
         
         for world in worlds: 
             if announcement_type == Announcements.ONE_ODD:
