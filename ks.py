@@ -28,6 +28,7 @@ class Announcements(Enum):
     BOTH_LOW        = 7
     ONE_MUL_THREE   = 8
     BOTH_MUL_THREE  = 9
+    ONE_DIFF        = 10
 
 class KnowledgeStructure:
     def __init__ (self, amount_agents, amount_cards):
@@ -176,6 +177,17 @@ class KnowledgeStructure:
             return True
         return False
 
+    # My numbers only differ by one number, so it should return true if you have a (1,2) or (5,6) for example.
+    def one_diff_card_law(self, agent_idx, world):
+        agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+        one_diff_agentworld = []
+        for idx, w in enumerate(agentworld):
+            if idx < (len(agentworld)-1):
+                if agentworld[idx] == 1 and agentworld[idx+1] == 1:             #two indices next to each other have a value that contains true.
+                    one_diff_agentworld.append(w)
+        if sum(one_diff_agentworld) > 0:
+            return True
+        return False
 
     # Make announcement and apply the new law
     def announce(self, agent_idx, announcement_type):
@@ -220,6 +232,10 @@ class KnowledgeStructure:
         if announcement_type == Announcements.BOTH_MUL_THREE:
             print (ANMT + " Agent {} has two multiple of three cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.both_multiple_three_card_law(agent_idx, w)]
+
+        if announcement_type == Announcements.ONE_DIFF:
+            print (ANMT + " Agent {} announces he has two cards that only differ by one.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.one_diff_card_law(agent_idx, w)]
 
         # Store the announcement in the list of already made announcements
         self.prev_announced.append(tuple((agent_idx, announcement_type)))
@@ -300,11 +316,14 @@ class KnowledgeStructure:
             if announcement_type == Announcements.BOTH_MUL_THREE:
                 if not self.both_multiple_three_card_law(target_agent_idx, world):
                     return False
+            if announcement_type == Announcements.ONE_DIFF:
+                if not self.one_diff_card_law(target_agent_idx, world):
+                    return False
         return True
 
     def allowed_announcements(self, agent_idx, target_agent_idx):
         announcements = []
-        for announcement_type in [Announcements.BOTH_ODD, Announcements.BOTH_EVEN, Announcements.ONE_EVEN, Announcements.ONE_ODD, Announcements.ONE_LOW, Announcements.ONE_HIGH, Announcements.BOTH_HIGH, Announcements.BOTH_LOW, Announcements.ONE_MUL_THREE, Announcements.BOTH_MUL_THREE]:
+        for announcement_type in [Announcements.BOTH_ODD, Announcements.BOTH_EVEN, Announcements.ONE_EVEN, Announcements.ONE_ODD, Announcements.ONE_LOW, Announcements.ONE_HIGH, Announcements.BOTH_HIGH, Announcements.BOTH_LOW, Announcements.ONE_MUL_THREE, Announcements.BOTH_MUL_THREE, Announcements.ONE_DIFF]:
             if self.announcement_allowed(agent_idx, target_agent_idx, announcement_type):
                 announcements.append(announcement_type)
         return announcements
