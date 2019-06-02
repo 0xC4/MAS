@@ -18,14 +18,16 @@ INFO = bcolors.OKBLUE + "[I]" + bcolors.ENDC
 VALD = bcolors.WARNING + "[V]" + bcolors.ENDC
 
 class Announcements(Enum):
-    ONE_ODD     = 0
-    ONE_EVEN    = 1
-    BOTH_ODD    = 2
-    BOTH_EVEN   = 3
-    ONE_HIGH    = 4
-    ONE_LOW     = 5
-    BOTH_HIGH   = 6
-    BOTH_LOW    = 7
+    ONE_ODD         = 0
+    ONE_EVEN        = 1
+    BOTH_ODD        = 2
+    BOTH_EVEN       = 3
+    ONE_HIGH        = 4
+    ONE_LOW         = 5
+    BOTH_HIGH       = 6
+    BOTH_LOW        = 7
+    ONE_MUL_THREE   = 8
+    BOTH_MUL_THREE  = 9
 
 class KnowledgeStructure:
     def __init__ (self, amount_agents, amount_cards):
@@ -96,66 +98,84 @@ class KnowledgeStructure:
     # AT LEAST ONE odd card
     def one_odd_card_law(self, agent_idx, world):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
-        oddagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 0] # ODD is even since index 0 corresponds with 1
-        if sum(oddagentworld) > 0:
+        odd_agentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 0] # ODD is even since index 0 corresponds with 1
+        if sum(odd_agentworld) > 0:
             return True
         return False
 
     # AT LEAST ONE even card
     def one_even_card_law(self, agent_idx, world):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
-        evenagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 1] # EVEN is odd since index 0 corresponds with 1
-        if sum(evenagentworld) > 0:
+        even_agentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 1] # EVEN is odd since index 0 corresponds with 1
+        if sum(even_agentworld) > 0:
             return True
         return False
 
     # BOTH ODD
     def both_odd_card_law(self, agent_idx, world):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
-        oddagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 0] # ODD is EVEN since index 0 corresponds with 1
-        if sum(oddagentworld) == 2:
+        odd_agentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 0] # ODD is EVEN since index 0 corresponds with 1
+        if sum(odd_agentworld) == 2:
             return True
         return False
 
     # BOTH EVEN
     def both_even_card_law(self, agent_idx, world):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
-        oddagentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 1] # EVEN is ODD since index 0 corresponds with 1
-        if sum(oddagentworld) == 2:
+        even_agentworld = [w for idx, w in enumerate(agentworld) if idx%2 == 1] # EVEN is ODD since index 0 corresponds with 1
+        if sum(even_agentworld) == 2:
             return True
         return False
 
     # AT LEAST ONE low card
     def one_low_card_law(self, agent_idx, world):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
-        oddagentworld = [w for idx, w in enumerate(agentworld) if idx <= 2] # LOW cards are 1 - 3
-        if sum(oddagentworld) > 0:
+        low_agentworld = [w for idx, w in enumerate(agentworld) if idx <= 2] # LOW cards are 1 - 3
+        if sum(low_agentworld) > 0:
             return True
         return False
 
     # AT LEAST ONE low card
     def one_high_card_law(self, agent_idx, world):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
-        oddagentworld = [w for idx, w in enumerate(agentworld) if idx >= 3] # HIGH cards are 1 - 3
-        if sum(oddagentworld) > 0:
+        high_agentworld = [w for idx, w in enumerate(agentworld) if idx >= 3] # HIGH cards are 1 - 3
+        if sum(high_agentworld) > 0:
             return True
         return False
 
     # BOTH low cards
     def both_low_card_law(self, agent_idx, world):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
-        oddagentworld = [w for idx, w in enumerate(agentworld) if idx <= 2] # LOW cards are 1 - 3
-        if sum(oddagentworld) == 2:
+        low_agentworld = [w for idx, w in enumerate(agentworld) if idx <= 2] # LOW cards are 1 - 3
+        if sum(low_agentworld) == 2:
             return True
         return False
 
     # BOTH high cards
     def both_high_card_law(self, agent_idx, world):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
-        oddagentworld = [w for idx, w in enumerate(agentworld) if idx >= 3] # HIGH cards are 1 - 3
-        if sum(oddagentworld) == 2:
+        high_agentworld = [w for idx, w in enumerate(agentworld) if idx >= 3] # HIGH cards are 1 - 3
+        if sum(high_agentworld) == 2:
             return True
         return False
+
+
+    # AT LEAST ONE of my cards is a multiple of three.
+    def one_multiple_three_card_law(self, agent_idx, world):
+        agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+        mul_three_agentworld = [w for idx, w in enumerate(agentworld) if (idx+1)%3 == 0] # (idx+1) because the cards start at index 1 instead of index 0.
+        if sum(mul_three_agentworld) > 0:
+            return True
+        return False
+
+    # BOTH of my cards are a multiple of three.
+    def both_multiple_three_card_law(self, agent_idx, world):
+        agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+        mul_three_agentworld = [w for idx, w in enumerate(agentworld) if (idx+1)%3 == 0] # (idx+1) because the cards start at index 1 instead of index 0.
+        if sum(mul_three_agentworld) > 1:
+            return True
+        return False
+
 
     # Make announcement and apply the new law
     def announce(self, agent_idx, announcement_type):
@@ -192,6 +212,14 @@ class KnowledgeStructure:
         if announcement_type == Announcements.BOTH_HIGH:
             print (ANMT + " Agent {} has both high cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.both_high_card_law(agent_idx, w)]
+
+        if announcement_type == Announcements.ONE_MUL_THREE:
+            print (ANMT + " Agent {} has one multiple of three card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.one_multiple_three_card_law(agent_idx, w)]
+
+        if announcement_type == Announcements.BOTH_MUL_THREE:
+            print (ANMT + " Agent {} has two multiple of three cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.both_multiple_three_card_law(agent_idx, w)]
 
         # Store the announcement in the list of already made announcements
         self.prev_announced.append(tuple((agent_idx, announcement_type)))
@@ -266,11 +294,17 @@ class KnowledgeStructure:
             if announcement_type == Announcements.BOTH_HIGH:
                 if not self.both_high_card_law(target_agent_idx, world):
                     return False
+            if announcement_type == Announcements.ONE_MUL_THREE:
+                if not self.one_multiple_three_card_law(target_agent_idx, world):
+                    return False
+            if announcement_type == Announcements.BOTH_MUL_THREE:
+                if not self.both_multiple_three_card_law(target_agent_idx, world):
+                    return False
         return True
 
     def allowed_announcements(self, agent_idx, target_agent_idx):
         announcements = []
-        for announcement_type in [Announcements.BOTH_ODD, Announcements.BOTH_EVEN, Announcements.ONE_EVEN, Announcements.ONE_ODD, Announcements.ONE_LOW, Announcements.ONE_HIGH, Announcements.BOTH_HIGH, Announcements.BOTH_LOW]:
+        for announcement_type in [Announcements.BOTH_ODD, Announcements.BOTH_EVEN, Announcements.ONE_EVEN, Announcements.ONE_ODD, Announcements.ONE_LOW, Announcements.ONE_HIGH, Announcements.BOTH_HIGH, Announcements.BOTH_LOW, Announcements.ONE_MUL_THREE, Announcements.BOTH_MUL_THREE]:
             if self.announcement_allowed(agent_idx, target_agent_idx, announcement_type):
                 announcements.append(announcement_type)
         return announcements
