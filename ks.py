@@ -1,6 +1,5 @@
 import itertools
 import random
-from tqdm import tqdm
 from enum import Enum
 
 class bcolors:
@@ -58,7 +57,7 @@ class KnowledgeStructure:
     # All possible permutations of True and False value of propositional atoms for given amount agents and cards
     def generate_all_world_possibilities(self):
         valid_worlds = []
-        for obs in tqdm(itertools.permutations(range(self.amount_cards)), desc="Generating possible worlds"):
+        for obs in itertools.permutations(range(self.amount_cards)):
             world = [False] * self.amount_cards * self.amount_agents
             for idx, o in enumerate(obs):
                 agent_idx = idx // 2
