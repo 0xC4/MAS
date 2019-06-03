@@ -68,15 +68,13 @@ class KnowledgeStructure:
                         valid_worlds.append(world)
         return valid_worlds
 
-        
-
-    # Test whether a world is in accordance with the laws, returns false if world is invalid according to rules
-    def apply_state_laws(self, world):
-        return all([self.two_card_law(world), self.no_same_card_law(world)])
-
     # Returns only the worlds that are in accordance with the given laws
     def get_valid_worlds(self):
         return [world for world in self.generate_all_world_possibilities() if self.apply_state_laws(world)]
+    
+    # Test whether a world is in accordance with the laws, returns false if world is invalid according to rules
+    def apply_state_laws(self, world):
+        return all([self.two_card_law(world), self.no_same_card_law(world)])
 
     # No agent can have more or less than two cards
     def two_card_law(self, world):

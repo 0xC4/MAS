@@ -92,5 +92,5 @@ def plot_win_hist(win_results):
     plt.show()
 
 
-win_results = run_game(1000)
+win_results = run_game(1)
 plot_win_hist(win_results)
