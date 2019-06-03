@@ -278,13 +278,10 @@ class KnowledgeStructure:
             print ("    Agent {}: {}".format("abcdefghijklmnopqrstuvwxyz"[agent_idx], len(self.get_agent_valid_worlds(agent_idx))))
 
     def announcement_allowed(self, announcing_agent_idx, target_agent_idx, announcement_type):
-
         # Don't allow the same announcement about same agent's cards twice
         if (tuple((target_agent_idx, announcement_type)) in self.prev_announced):
             return False
-
         worlds = self.get_agent_valid_worlds(announcing_agent_idx)
-        
         for world in worlds: 
             if announcement_type == Announcements.ONE_ODD:
                 if not self.one_odd_card_law(target_agent_idx, world):
