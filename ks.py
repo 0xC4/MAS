@@ -38,6 +38,7 @@ class KnowledgeStructure:
         self.initial_world  = self.pick_initial_world(self.valid_worlds)
         self.observables    = self.make_agents_observables(self.amount_agents, self.initial_world, self.vocab)
         self.prev_announced = []
+        self.valid_worlds   = self.get_worlds_possible_for_agents()
 
     def __repr__(self):
         return """Model: 
@@ -55,7 +56,7 @@ class KnowledgeStructure:
         return vocab
 
     # All possible permutations of True and False value of propositional atoms for given amount agents and cards
-    def generate_all_world_possibilities(self):
+    def get_valid_worlds(self):
         valid_worlds = []
         for obs in itertools.permutations(range(self.amount_cards)):
             world = [False] * self.amount_cards * self.amount_agents
@@ -75,8 +76,11 @@ class KnowledgeStructure:
         return all([self.two_card_law(world), self.no_same_card_law(world)])
 
     # Returns only the worlds that are in accordance with the given laws
-    def get_valid_worlds(self):
-        return [world for world in self.generate_all_world_possibilities() if self.apply_state_laws(world)]
+    def get_worlds_possible_for_agents(self):
+        all_agent_valid_worlds = []
+        for i in range(self.amount_agents):
+            all_agent_valid_worlds += self.get_agent_valid_worlds(i)
+        return [world for world in self.valid_worlds if world in all_agent_valid_worlds]
 
     # No agent can have more or less than two cards
     def two_card_law(self, world):
