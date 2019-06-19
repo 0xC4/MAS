@@ -91,6 +91,7 @@ class KnowledgeStructure:
         proxies = [self.make_proxy(clr, line_collections[0], lw=5) for clr in edge_colors]
 
         plt.legend(proxies, ["agent a", "agent b", "agent c"], loc='best')
+        plt.title("Kripke Model of Numper Pile")
         plt.show()
 
 
