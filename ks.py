@@ -41,6 +41,23 @@ class KnowledgeStructure:
         self.observables    = self.make_agents_observables(self.amount_agents, self.initial_world, self.vocab)
         self.prev_announced = []
         self.valid_worlds   = self.get_worlds_possible_for_agents()
+        self.make_enumerated_worlds()
+
+    def make_enumerated_worlds(self):
+        self.enumerated_worlds = list(enumerate(self.valid_worlds))
+    
+    # Get world number after worlds have been removed from the list of valid worlds
+    def get_world_number (self, world):
+        for idx, w in self.enumerated_worlds:
+            if w == world:
+                return idx
+        return -1
+    
+    # Gets a list of tuples of two worlds for an agent between which there are a relations
+    def get_relations (self, agent_idx):
+        world_names = tuple([self.get_world_number(w) for w in self.get_agent_valid_worlds(agent_idx)])
+        relations = list(itertools.product(world_names, repeat=2))
+        return relations
 
     def __repr__(self):
         return """Model: 
