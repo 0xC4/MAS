@@ -4,7 +4,7 @@ from enum import Enum
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-
+from policies import Policies
 
 class bcolors:
     HEADER = '\033[95m'
@@ -37,6 +37,8 @@ class KnowledgeStructure:
     def __init__ (self, amount_agents, amount_cards):
         self.amount_agents  = amount_agents
         self.amount_cards   = amount_cards
+        self.num_policies   = len(Policies)
+        self.policies       = [Policies.RANDOM, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
         self.vocab          = self.generate_vocab(self.amount_agents, self.amount_cards)
         self.valid_worlds   = self.get_valid_worlds()
         self.initial_world  = self.pick_initial_world(self.valid_worlds)
@@ -341,6 +343,7 @@ class KnowledgeStructure:
             agent = dict()
             agent["name"] = "abcdefghijklmnopqrstuvwxyz"[i]
             agent["observations"] = [vocab.index(obs) for obs in self.get_observations_from_world(init_world, i)]
+            agent["policy"] = self.policies[i]
             agents.append(agent)
         return agents
 
