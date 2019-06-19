@@ -3,6 +3,8 @@ import itertools
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from enum import Enum
+from policies import Policies
 
 P_AMOUNT_AGENTS = 3
 P_AMOUNT_CARDS  = P_AMOUNT_AGENTS * 2
@@ -33,33 +35,78 @@ def run_game(amt_games=1):
             # Keep moving to the next player
             turn_agent = (turn_agent + 1) % P_AMOUNT_AGENTS
 
+
             # The agent has not made an announcement yet
             announcement_made = False
 
-            for agent in range(P_AMOUNT_AGENTS):
-                for target_agent in range(P_AMOUNT_AGENTS):
-                    print ("[P{}->{}] ".format(agent, target_agent) + str(knowledgestructure.allowed_announcements(agent, target_agent)))
+            # for agent in range(P_AMOUNT_AGENTS):
+            #     for target_agent in range(P_AMOUNT_AGENTS):
+            #         print ("[P{}->{}] ".format(agent, target_agent) + str(knowledgestructure.allowed_announcements(agent, target_agent)))
 
-            # Random shuffle the target agents
             target_agents = list(range(P_AMOUNT_AGENTS))
-            random.shuffle(target_agents)
 
-            for target_agent in target_agents:
-                possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
-                
-                # Player cannot make an announcement about this target agent
-                if len(possible_announcements) < 1:
-                    # Move to next target agent
-                    continue
-                
-                # Otherwise make one of the possible announcements about this agent
-                print ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
-                knowledgestructure.announce(target_agent, random.sample(possible_announcements, 1)[0])
-                announcement_made = True
-                break
-            
+            #Apply Policies
+            #RANDOM, CHOOSE_OTHER_PLAYER, CHOOSE_THEMSELVES
+            if knowledgestructure.observables[turn_agent]["policy"] in [Policies.RANDOM, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]:
+
+                random.shuffle(target_agents)
+
+                #CHOOSE_OTHER_PLAYER puts self last in the list
+                if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_OTHER_PLAYER:
+                    target_agents.remove(turn_agent)
+                    target_agents.append(turn_agent)
+                    print(target_agents)
+
+                #CHOOSE_THEMSELVES puts self first in the list
+                if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_THEMSELVES:
+                    target_agents.remove(turn_agent)
+                    target_agents.insert(0,turn_agent)
+                    print(target_agents)
+
+                for target_agent in target_agents:
+                    possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
+                    
+                    # Player cannot make an announcement about this target agent
+                    if len(possible_announcements) < 1:
+                        # Move to next target agent
+                        continue
+                    
+                    # Otherwise make one of the possible announcements about this agent
+                    print ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
+                    print(knowledgestructure.observables[turn_agent]["policy"])
+                    knowledgestructure.announce(target_agent, random.sample(possible_announcements, 1)[0])
+                    announcement_made = True
+                    break
+
+            #ARGMIN, ARGMAX
+            if knowledgestructure.observables[turn_agent]["policy"] in [Policies.ARGMIN, Policies.ARGMAX]:
+                possible_announcements = []
+                best_announcement = None
+                if knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMIN:
+                    num_worlds = 1000
+                elif knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMAX:
+                    num_worlds = 0
+                for target_agent in target_agents:
+                    possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
+                    for announcement in possible_announcements:
+                        old_worlds = knowledgestructure.valid_worlds
+                        knowledgestructure.announce(target_agent, announcement)
+                        if knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMIN and len(knowledgestructure.valid_worlds) < num_worlds:
+                            num_worlds = len(knowledgestructure.valid_worlds)
+                            best_announcement = (target_agent, announcement)
+                        elif knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMAX and len(knowledgestructure.valid_worlds) > num_worlds:
+                            num_worlds = len(knowledgestructure.valid_worlds)
+                            best_announcement = (target_agent, announcement)
+                        knowledgestructure.valid_worlds = old_worlds
+                if best_announcement != None:
+                    print(best_announcement)
+                    print ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
+                    print(knowledgestructure.observables[turn_agent]["policy"])
+                    knowledgestructure.announce(best_announcement[0], best_announcement[1])
+                    announcement_made = True
+
             if not announcement_made:
-                print ("Agent {} passes because he cannot make any valid announcements.")
+                print ("Agent {} passes because he cannot make any valid announcements.".format("abcdefghij"[turn_agent]))
                 pass_count += 1
                 if pass_count >= P_AMOUNT_AGENTS:
                     turn_agent = -1
@@ -89,7 +136,6 @@ def plot_win_hist(win_results):
     plt.ylabel("Win count")
     plt.xlabel("Player ID")
     plt.show()
-
 
 win_results = run_game(1)       #Turn up to increase number of games played. Printed output printed is not suppressed yet, sorry for this. A 1000 games will take about a minute to compute.
 plot_win_hist(win_results)
