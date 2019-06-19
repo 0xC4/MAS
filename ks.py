@@ -221,13 +221,21 @@ class KnowledgeStructure:
     
     # I know one card of the target agent, with certainty.
     def knows_one_card_law(self, src_agent, target_agent):
-        src_worlds = self.get_agent_valid_worlds(src_agent)
+
+        # Obtain valid worlds for the announcing agent
+        announcing_agent_worlds = self.valid_worlds
 
         # Initial known cards
-        for w1 in src_worlds:
-            known_cards = self.get_agent_cards(w1, target_agent)
-            for w2 in src_worlds:
-                known_cards = [c for c in self.get_agent_cards(w2, target_agent) if c in known_cards]
+        for w1 in announcing_agent_worlds:
+            known_cards = (self.get_agent_cards(w1, target_agent))
+            
+            for w2 in announcing_agent_worlds:
+                # Source agent cards must remain constant between worlds
+
+                if not self.get_agent_cards(w1, src_agent) == self.get_agent_cards(w2, src_agent):
+                    continue
+                
+                known_cards = [c for c in known_cards if c in self.get_agent_cards(w2, target_agent)]
                 if len(known_cards) < 1:
                     return False
         return True
