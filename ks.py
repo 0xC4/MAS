@@ -1,6 +1,7 @@
 import itertools
 import random
 from enum import Enum
+from policies import Policies
 
 class bcolors:
     HEADER = '\033[95m'
@@ -33,6 +34,7 @@ class KnowledgeStructure:
     def __init__ (self, amount_agents, amount_cards):
         self.amount_agents  = amount_agents
         self.amount_cards   = amount_cards
+        self.num_policies   = len(Policies)
         self.vocab          = self.generate_vocab(self.amount_agents, self.amount_cards)
         self.valid_worlds   = self.get_valid_worlds()
         self.initial_world  = self.pick_initial_world(self.valid_worlds)
@@ -250,10 +252,13 @@ class KnowledgeStructure:
     # Create agents and their respective observables
     def make_agents_observables(self, amount_agents, init_world, vocab):
         agents = list()
+        policies = list(range(self.num_policies))
+        random.shuffle(policies)
         for i in range(amount_agents):
             agent = dict()
             agent["name"] = "abcdefghijklmnopqrstuvwxyz"[i]
             agent["observations"] = [vocab.index(obs) for obs in self.get_observations_from_world(init_world, i)]
+            agent["policy"] = policies[i]
             agents.append(agent)
         return agents
 

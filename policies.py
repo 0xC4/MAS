@@ -7,4 +7,4 @@ class Policies(Enum):
     CHOOSE_PLAYER_HIMSELF   = 2     #Favors choosing an announcement about himself rather than about another player.
     ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
     ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
-    HUMAN                   = 5     #human player.
+    # HUMAN                   = 5     #human player.
