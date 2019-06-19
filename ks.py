@@ -1,6 +1,9 @@
 import itertools
 import random
 from enum import Enum
+import networkx as nx
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 from policies import Policies
 
 class bcolors:
@@ -43,6 +46,79 @@ class KnowledgeStructure:
         self.prev_announced = []
         self.valid_worlds   = self.get_worlds_possible_for_agents()
         self.make_enumerated_worlds()
+        self.make_graph()           #based on relations and valid worlds
+
+    def __repr__(self):
+        return """Model: 
+        Amount agents:   {}
+        Amount cards:    {}
+        Prop. Atoms:     {}
+        Amt val. worlds: {}""".format(self.amount_agents, self.amount_cards, self.vocab, len(self.valid_worlds))
+
+
+    #creates a graph based on relations
+    #addes nodes/relations and layout to the kripke model
+    #all nodes is a list of lists containing all relations for each agent.
+    #all relations is a list of lists that contains all relations of each agent.
+    def make_graph(self):
+        #create all relations and nodes in one list
+        all_relations   = []
+        all_nodes       = []
+        edge_colors = ['b', 'm', 'chartreuse'] #colors of edges
+        G=nx.DiGraph()
+
+        all_relations = [self.get_relations(agent_idx) for agent_idx in range(self.amount_agents)]
+        all_nodes     = [self.get_nodes_agent(all_relations[agent_idx]) for agent_idx in range(self.amount_agents)]
+
+        #add all nodes to the graph
+        for world_idx in range(len(self.valid_worlds)):
+            G.add_node(world_idx)
+
+        pos=nx.spring_layout(G)
+        labels={}       #init empty label dict
+
+        line_collections = []
+        #draw all nodes and edges
+        for agent_idx in range(self.amount_agents):
+            nx.draw_networkx_nodes(G, pos, nodelist=all_nodes[agent_idx], node_color='black', node_size=3000, alpha=1.0)
+            line_collections.append(nx.draw_networkx_edges(G,pos, edgelist=all_relations[agent_idx], width=2, alpha=0.5, edge_color=edge_colors[agent_idx], arrows=True))
+
+        for idx, node in enumerate(G.nodes()):
+            extra_info = self.get_string_version_of_world(node)
+            labels[node] = str(node) + "\n" + extra_info
+
+        nx.draw_networkx_labels(G,pos,labels,font_size=8, font_color='c')
+        proxies = [self.make_proxy(clr, line_collections[0], lw=5) for clr in edge_colors]
+        plt.legend(proxies, ["Agent a", "Agent b", "Agent c"], loc='best')
+        plt.title("Kripke Model of Numper Pile")
+        plt.show()
+
+    #helper function for creating a legend for the graph/kripke_model
+    def make_proxy(self, clr, mappable, **kwargs):
+        return Line2D([0, 1], [0, 1], color=clr, **kwargs)
+
+    #returns a string version of the given world
+    def get_string_version_of_world(self, world_idx):
+        world = self.valid_worlds[world_idx]
+        info = ""
+        for agent_idx in range(self.amount_agents):
+            agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+            cards = [i+1 for i, x in enumerate(agentworld) if x]
+            info = info + "abcdefghijklmnopqrstuvwxyz"[agent_idx] + str(cards) + "\n"
+        return info
+
+    def get_agent_cards(self, world, agent_idx):
+        agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+        return [i for i, x in enumerate(agentworld) if x]
+
+    #returns a list of unique world names for an agent - a node is a possible world
+    def get_nodes_agent(self, relations):
+        nodes = []
+        for tup in relations:
+            for item in tup:
+                if item not in nodes:
+                    nodes.append(item)
+        return nodes
 
     def make_enumerated_worlds(self):
         self.enumerated_worlds = list(enumerate(self.valid_worlds))
@@ -59,13 +135,6 @@ class KnowledgeStructure:
         world_names = tuple([self.get_world_number(w) for w in self.get_agent_valid_worlds(agent_idx)])
         relations = list(itertools.product(world_names, repeat=2))
         return relations
-
-    def __repr__(self):
-        return """Model: 
-        Amount agents:   {}
-        Amount cards:    {}
-        Prop. Atoms:     {}
-        Amt val. worlds: {}""".format(self.amount_agents, self.amount_cards, self.vocab, len(self.valid_worlds))
 
     # Set of all propositional atoms
     def generate_vocab (self, amt_agents, amt_cards):
