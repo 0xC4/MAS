@@ -137,6 +137,5 @@ def plot_win_hist(win_results):
     plt.xlabel("Player ID")
     plt.show()
 
-
-win_results = run_game(1000)       #Turn up to increase number of games played. Printed output printed is not suppressed yet, sorry for this. A 1000 games will take about a minute to compute.
+win_results = run_game(1)       #Turn up to increase number of games played. Printed output printed is not suppressed yet, sorry for this. A 1000 games will take about a minute to compute.
 plot_win_hist(win_results)
