@@ -28,6 +28,14 @@ class Announcements(Enum):
     ONE_MUL_THREE   = 8
     BOTH_MUL_THREE  = 9
     ONE_DIFF        = 10
+    
+    # K-announcements
+    K_ONE_CARD_A    = 11
+    K_ONE_CARD_B    = 12
+    K_ONE_CARD_C    = 13
+    K_BOTH_CARD_A   = 14
+    K_BOTH_CARD_B   = 15
+    K_BOTH_CARD_C   = 16
 
 class KnowledgeStructure:
     def __init__ (self, amount_agents, amount_cards):
@@ -86,7 +94,9 @@ class KnowledgeStructure:
                         valid_worlds.append(world)
         return valid_worlds
 
-        
+    def get_agent_cards(self, world, agent_idx):
+        agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
+        return [i for i, x in enumerate(agentworld) if x]
 
     # Test whether a world is in accordance with the laws, returns false if world is invalid according to rules
     def apply_state_laws(self, world):
@@ -208,6 +218,19 @@ class KnowledgeStructure:
         if sum(one_diff_agentworld) > 0:
             return True
         return False
+    
+    # I know one card of the target agent, with certainty.
+    def knows_one_card_law(self, src_agent, target_agent):
+        src_worlds = self.get_agent_valid_worlds(src_agent)
+
+        # Initial known cards
+        for w1 in src_worlds:
+            known_cards = self.get_agent_cards(w1, target_agent)
+            for w2 in src_worlds:
+                known_cards = [c for c in self.get_agent_cards(w2, target_agent) if c in known_cards]
+                if len(known_cards) < 1:
+                    return False
+        return True
 
     # Make announcement and apply the new law
     def announce(self, agent_idx, announcement_type):
@@ -256,6 +279,19 @@ class KnowledgeStructure:
         if announcement_type == Announcements.ONE_DIFF:
             print (ANMT + " Agent {} announces he has two cards that only differ by one.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.one_diff_card_law(agent_idx, w)]
+
+        # K-ANNOUNCEMENTS
+        if announcement_type == Announcements.K_ONE_CARD_A:
+            print (ANMT + " Agent {} knows one card of agent a".format("abcd"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.knows_one_card_law(agent_idx, 0)]
+
+        if announcement_type == Announcements.K_ONE_CARD_B:
+            print (ANMT + " Agent {} knows one card of agent b".format("abcd"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.knows_one_card_law(agent_idx, 1)]
+
+        if announcement_type == Announcements.K_ONE_CARD_C:
+            print (ANMT + " Agent {} knows one card of agent c".format("abcd"[agent_idx]))
+            self.valid_worlds = [w for w in self.valid_worlds if self.knows_one_card_law(agent_idx, 2)]
 
         # Store the announcement in the list of already made announcements
         self.prev_announced.append(tuple((agent_idx, announcement_type)))
@@ -336,11 +372,25 @@ class KnowledgeStructure:
             if announcement_type == Announcements.ONE_DIFF:
                 if not self.one_diff_card_law(target_agent_idx, world):
                     return False
+        
+        # K-Announcements
+        if announcement_type == Announcements.K_ONE_CARD_A:
+            if not self.knows_one_card_law(target_agent_idx, 0):
+                return False
+         
+        if announcement_type == Announcements.K_ONE_CARD_B:
+            if not self.knows_one_card_law(target_agent_idx, 1):
+                return False
+        
+        if announcement_type == Announcements.K_ONE_CARD_C:
+            if not self.knows_one_card_law(target_agent_idx, 2):
+                return False
+
         return True
 
     def allowed_announcements(self, agent_idx, target_agent_idx):
         announcements = []
-        for announcement_type in [Announcements.BOTH_ODD, Announcements.BOTH_EVEN, Announcements.ONE_EVEN, Announcements.ONE_ODD, Announcements.ONE_LOW, Announcements.ONE_HIGH, Announcements.BOTH_HIGH, Announcements.BOTH_LOW, Announcements.ONE_MUL_THREE, Announcements.BOTH_MUL_THREE, Announcements.ONE_DIFF]:
+        for announcement_type in [Announcements.BOTH_ODD, Announcements.BOTH_EVEN, Announcements.ONE_EVEN, Announcements.ONE_ODD, Announcements.ONE_LOW, Announcements.ONE_HIGH, Announcements.BOTH_HIGH, Announcements.BOTH_LOW, Announcements.ONE_MUL_THREE, Announcements.BOTH_MUL_THREE, Announcements.ONE_DIFF, Announcements.K_ONE_CARD_A, Announcements.K_ONE_CARD_B, Announcements.K_ONE_CARD_C]:
             if self.announcement_allowed(agent_idx, target_agent_idx, announcement_type):
                 announcements.append(announcement_type)
         return announcements
