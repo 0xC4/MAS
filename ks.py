@@ -3,6 +3,7 @@ import random
 from enum import Enum
 import networkx as nx
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 
 class bcolors:
@@ -58,35 +59,43 @@ class KnowledgeStructure:
     #all nodes is a list of lists containing all relations for each agent.
     #all relations is a list of lists that contains all relations of each agent.
     def make_graph(self):
+
+        #create all relations and nodes in one list
         all_relations   = []
         all_nodes       = []
-        #create all relations and nodes in one list
-        for agent_idx in range(self.amount_agents):
-            all_relations.append(self.get_relations(agent_idx))
-        for agent_idx in range(self.amount_agents):
-            all_nodes.append(self.get_nodes_agent(all_relations[agent_idx]))
-        # all_relations = [all_relations.append(self.get_relations(agent_idx)) for agent_idx in range(self.amount_agents))]
-        #create graph
+        edge_colors = ['b', 'm', 'chartreuse'] #colors of edges
         G=nx.DiGraph()
-        #colors of edges
-        edge_colors = ['b', 'r', 'g']
+
+        all_relations = [self.get_relations(agent_idx) for agent_idx in range(self.amount_agents)]
+        all_nodes     = [self.get_nodes_agent(all_relations[agent_idx]) for agent_idx in range(self.amount_agents)]
+
         #add all nodes to the graph
         for world_idx in range(len(self.valid_worlds)):
             G.add_node(world_idx)
+
         pos=nx.spring_layout(G)
         labels={}       #init empty label dict
 
+        line_collections = []
         #draw all nodes and edges
         for agent_idx in range(self.amount_agents):
-            nx.draw_networkx_nodes(G, pos, nodelist=all_nodes[agent_idx], node_color='g', node_size=500, alpha=1.0)
-            nx.draw_networkx_edges(G,pos, edgelist=all_relations[agent_idx], width=2, alpha=0.5, edge_color=edge_colors[agent_idx])
+            nx.draw_networkx_nodes(G, pos, nodelist=all_nodes[agent_idx], node_color='black', node_size=3000, alpha=1.0)
+            line_collections.append(nx.draw_networkx_edges(G,pos, edgelist=all_relations[agent_idx], width=2, alpha=0.5, edge_color=edge_colors[agent_idx], arrows=True))
 
         for idx, node in enumerate(G.nodes()):
             extra_info = self.get_string_version_of_world(node)
             labels[node] = str(node) + "\n" + extra_info
 
-        nx.draw_networkx_labels(G,pos,labels,font_size=8)
+        nx.draw_networkx_labels(G,pos,labels,font_size=8, font_color='c')
+
+        proxies = [self.make_proxy(clr, line_collections[0], lw=5) for clr in edge_colors]
+
+        plt.legend(proxies, ["agent a", "agent b", "agent c"], loc='best')
         plt.show()
+
+
+    def make_proxy(self, clr, mappable, **kwargs):
+        return Line2D([0, 1], [0, 1], color=clr, **kwargs)
 
     #returns a string version of the given world
     def get_string_version_of_world(self, world_idx):
@@ -95,14 +104,12 @@ class KnowledgeStructure:
         for agent_idx in range(self.amount_agents):
             agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
             cards = [i+1 for i, x in enumerate(agentworld) if x]
-            info = info + "abcdefghijklmnopqrstuvwxyz"[agent_idx] + str(cards) + " - "
-        return info[:-3]
-
+            info = info + "abcdefghijklmnopqrstuvwxyz"[agent_idx] + str(cards) + "\n"
+        return info
 
     def get_agent_cards(self, world, agent_idx):
         agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
         return [i for i, x in enumerate(agentworld) if x]
-
 
     #returns a list of unique world names for an agent
     def get_nodes_agent(self, relations):
