@@ -38,11 +38,40 @@ def run_game(amt_games=1):
 
             # The agent has not made an announcement yet
             announcement_made = False
-
-            # for agent in range(P_AMOUNT_AGENTS):
-            #     for target_agent in range(P_AMOUNT_AGENTS):
-            #         print ("[P{}->{}] ".format(agent, target_agent) + str(knowledgestructure.allowed_announcements(agent, target_agent)))
-
+            
+            choice = -1
+            while choice != 0:
+                print ()
+                print ("# MENU")
+                print ("[3] Show made announcements")
+                print ("[2] Show agent holdings")
+                print ("[1] Show possible announcements")
+                print ("[ENTER] Next step")
+                choice = input()
+                print ()
+                print ("----")
+                print ()
+                if choice == "":
+                    choice = 0
+                else:
+                    choice = int (choice)
+                if choice == 1:
+                    for agent in range(P_AMOUNT_AGENTS):
+                        for target_agent in range(P_AMOUNT_AGENTS):
+                           print ("[P{}->{}] ".format(agent, target_agent) + str(knowledgestructure.allowed_announcements(agent, target_agent)))
+                if choice == 2:
+                    for i in range(P_AMOUNT_AGENTS):
+                        print ("Agent {} has: {}".format("abcd"[i], knowledgestructure.get_agent_cards(knowledgestructure.initial_world, i)))
+                if choice == 3:
+                    idx = 0
+                    for agent, announcement in knowledgestructure.prev_announced:
+                        print ("Agent {} announced: Agent {}, {}".format("abcd"[idx%3], "abcd"[agent], announcement))
+                        idx += 1
+                
+                if choice != 0:
+                    print ()
+                    print ("----")
+                    print ()
             target_agents = list(range(P_AMOUNT_AGENTS))
 
             #Apply Policies
