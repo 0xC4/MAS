@@ -19,10 +19,14 @@ def print_world(world, vocab):
     for i in range (int(len(facts) / 2)):
         print (str(facts[i*2:i*2+2]))
 
-def run_game(amt_games=1, show_menu_each_step=True):
+def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies.RANDOM], show_menu_each_step=True):
+    
     winners = []
     for game_idx in range(amt_games):
         knowledgestructure = KnowledgeStructure(amount_agents=P_AMOUNT_AGENTS, amount_cards=P_AMOUNT_CARDS)
+        #Apply Policies to each agent
+        for idx, policy in enumerate(policy_set):
+            knowledgestructure.observables[idx]["policy"] = policy
 
         gui = GUI(ks=knowledgestructure)
         print (knowledgestructure)
@@ -48,9 +52,8 @@ def run_game(amt_games=1, show_menu_each_step=True):
             
             target_agents = list(range(P_AMOUNT_AGENTS))
 
-            #Apply Policies
             #RANDOM, CHOOSE_OTHER_PLAYER, CHOOSE_THEMSELVES
-            if knowledgestructure.observables[turn_agent]["policy"] in [Policies.RANDOM, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]:
+            if knowledgestructure.observables[turn_agent]["policy"] in policy_set:
 
                 random.shuffle(target_agents)
 
@@ -122,10 +125,19 @@ def run_game(amt_games=1, show_menu_each_step=True):
         if turn_agent == -1:
             print ("The game ended in a TIE, no player can make a valid announcement anymore.")
         else:
-            # Huray!
-            print ("Winner: Player {}".format("abcdefg"[turn_agent]))
-            winners.append("abcdefg"[turn_agent])
+            winners.append(get_policy_label(turn_agent, knowledgestructure))
     return winners
+
+#returns the policy label used in the histogram plot
+def get_policy_label(turn_agent, knowledgestructure):
+    print ("Winner: Player {} with policy : ({})".format("abcdefg"[turn_agent], knowledgestructure.observables[turn_agent]["policy"]))
+    winner_label = "Agent "
+    winner_label += "abcdefg"[turn_agent]
+    winner_label += ": "
+    winner_label += str(knowledgestructure.observables[turn_agent]["policy"])[9:]
+    winner_label = winner_label.replace("_", " ")
+    winner_label = winner_label.lower()
+    return winner_label
 
 
 #plot a histogram that shows win results for each player
@@ -137,14 +149,31 @@ def plot_win_hist(win_results):
     plt.bar(list(counts.keys()), counts.values(), color='c')
     plt.title("Win counts of each player")
     plt.ylabel("Win count")
-    plt.xlabel("Player ID")
+    plt.xlabel("Policy of player")
     plt.show()
 
+############################################################################
+#the amount of games that will be played
+n = 10000
 
-#Set to true if you want a menu after each step in the game. If set to False, you can run many games and see results of them.
-show_menu_each_step = True
+#Choose a policy for each agent:
+    # RANDOM                  = 0     #Chooses a random possible move
+    # CHOOSE_OTHER_PLAYER     = 1     #Favors choosing an announcement about another players rather than himself
+    # CHOOSE_THEMSELVES 	  = 2     #Favors choosing an announcement about himself rather than about another player.
+    # ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
+    # ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
+policy_set = [Policies.RANDOM, Policies.RANDOM, Policies.RANDOM]
 
-#Turn up to increase number of games played. Printed output printed is not suppressed yet, sorry for this. A 1000 games will take about a minute to compute.
-win_results = run_game(100, show_menu_each_step)
-if show_menu_each_step:
+#Set to true if you want a menu after each step
+# in the game. If set to False, you can run
+# many games and see results of them in a
+# histogram.
+show_menu_each_step = False
+
+#Turn up to increase number of games played. 
+# Printed output printed is not suppressed
+# yet, sorry for this. A 1000 games will 
+# take about a minute to compute.
+win_results = run_game(n, policy_set, show_menu_each_step)
+if not show_menu_each_step and n>1:             #you probably do not want a histogram if you play just one game
     plot_win_hist(win_results)
