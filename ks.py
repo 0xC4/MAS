@@ -299,72 +299,87 @@ class KnowledgeStructure:
         return True
 
     # Make announcement and apply the new law
-    def announce(self, agent_idx, announcement_type):
+    def announce(self, agent_idx, announcement_type, verbose=True):
         previous_worlds = len(self.valid_worlds)
         
         if announcement_type == Announcements.ONE_ODD:
-            print (ANMT + " Agent {} has one odd card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has one odd card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.one_odd_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.ONE_EVEN:
-            print (ANMT + " Agent {} has one even card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has one even card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.one_even_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.BOTH_ODD:
-            print (ANMT + " Agent {} has both odd cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has both odd cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.both_odd_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.BOTH_EVEN:
-            print (ANMT + " Agent {} has both even cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has both even cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.both_even_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.ONE_LOW:
-            print (ANMT + " Agent {} has one low card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has one low card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.one_low_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.ONE_HIGH:
-            print (ANMT + " Agent {} has one high card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has one high card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.one_high_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.BOTH_LOW:
-            print (ANMT + " Agent {} has both low cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has both low cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.both_low_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.BOTH_HIGH:
-            print (ANMT + " Agent {} has both high cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has both high cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.both_high_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.ONE_MUL_THREE:
-            print (ANMT + " Agent {} has one multiple of three card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has one multiple of three card.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.one_multiple_three_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.BOTH_MUL_THREE:
-            print (ANMT + " Agent {} has two multiple of three cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} has two multiple of three cards.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.both_multiple_three_card_law(agent_idx, w)]
 
         if announcement_type == Announcements.ONE_DIFF:
-            print (ANMT + " Agent {} announces he has two cards that only differ by one.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} announces he has two cards that only differ by one.".format("abcdefghijklmnopqrstuvwxyz"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.one_diff_card_law(agent_idx, w)]
 
         # K-ANNOUNCEMENTS
         if announcement_type == Announcements.K_ONE_CARD_A:
-            print (ANMT + " Agent {} knows one card of agent a".format("abcd"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} knows one card of agent a".format("abcd"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.knows_one_card_law(agent_idx, 0)]
 
         if announcement_type == Announcements.K_ONE_CARD_B:
-            print (ANMT + " Agent {} knows one card of agent b".format("abcd"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} knows one card of agent b".format("abcd"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.knows_one_card_law(agent_idx, 1)]
 
         if announcement_type == Announcements.K_ONE_CARD_C:
-            print (ANMT + " Agent {} knows one card of agent c".format("abcd"[agent_idx]))
+            if verbose: 
+                print (ANMT + " Agent {} knows one card of agent c".format("abcd"[agent_idx]))
             self.valid_worlds = [w for w in self.valid_worlds if self.knows_one_card_law(agent_idx, 2)]
 
         # Store the announcement in the list of already made announcements
         self.prev_announced.append(tuple((agent_idx, announcement_type)))
-
-        print (INFO + " Worlds removed:   {}".format(previous_worlds - len(self.valid_worlds)))
-        print ("    Worlds remaining: {}".format(len(self.valid_worlds)))
-        self.print_agent_valid_worlds()
+        
+        if verbose: 
+            print (INFO + " Worlds removed:   {}".format(previous_worlds - len(self.valid_worlds)))
+            print ("    Worlds remaining: {}".format(len(self.valid_worlds)))
+            self.print_agent_valid_worlds()
 
     # Create agents and their respective observables
     def make_agents_observables(self, amount_agents, init_world, vocab):
