@@ -54,7 +54,6 @@ class KnowledgeStructure:
         self.prev_announced = []
         self.valid_worlds   = self.get_worlds_possible_for_agents()
         self.make_enumerated_worlds()
-        self.make_graph()           #based on relations and valid worlds
 
     def __repr__(self):
         return """Model: 
