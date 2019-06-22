@@ -16,7 +16,7 @@ def print_world(world, vocab):
     for i in range (int(len(facts) / 2)):
         print (str(facts[i*2:i*2+2]))
 
-def run_game(amt_games=1):
+def run_game(amt_games=1, show_menu_each_step=True):
     winners = []
     for game_idx in range(amt_games):
         knowledgestructure = KnowledgeStructure(amount_agents=P_AMOUNT_AGENTS, amount_cards=P_AMOUNT_CARDS)
@@ -35,7 +35,6 @@ def run_game(amt_games=1):
             # Keep moving to the next player
             turn_agent = (turn_agent + 1) % P_AMOUNT_AGENTS
 
-
             # The agent has not made an announcement yet
             announcement_made = False
             
@@ -47,7 +46,10 @@ def run_game(amt_games=1):
                 print ("[2] Show agent holdings")
                 print ("[1] Show possible announcements")
                 print ("[ENTER] Next step")
-                choice = input()
+                if show_menu_each_step:
+                    choice = input()
+                else:
+                    choice = 0
                 print ()
                 print ("----")
                 print ()
@@ -166,5 +168,11 @@ def plot_win_hist(win_results):
     plt.xlabel("Player ID")
     plt.show()
 
-win_results = run_game(100)       #Turn up to increase number of games played. Printed output printed is not suppressed yet, sorry for this. A 1000 games will take about a minute to compute.
-plot_win_hist(win_results)
+
+#Set to true if you want a menu after each step in the game. If set to False, you can run many games and see results of them.
+show_menu_each_step = True
+
+#Turn up to increase number of games played. Printed output printed is not suppressed yet, sorry for this. A 1000 games will take about a minute to compute.
+win_results = run_game(100, show_menu_each_step)
+if show_menu_each_step:
+    plot_win_hist(win_results)
