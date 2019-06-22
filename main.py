@@ -197,7 +197,7 @@ def create_plot_filename(policy_set, number_of_games_played):
 
 ############################################################################
 #the amount of games that will be played
-n = 1000
+n = 1
 
 #Choose a policy for each agent:
     # RANDOM                  = 0     #Chooses a random possible move
@@ -205,7 +205,7 @@ n = 1000
     # CHOOSE_THEMSELVES 	  = 2     #Favors choosing an announcement about himself rather than about another player.
     # ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
     # ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
-policy_set = [Policies.RANDOM, Policies.RANDOM, Policies.RANDOM]
+policy_set = [Policies.RANDOM, Policies.ARGMAX, Policies.ARGMIN]
 
 #Create a plot filename based on program input 
 # parameters (policies and amount of games played).
@@ -215,7 +215,7 @@ plot_filename = create_plot_filename(policy_set, n)
 # in the game. If set to False, you can run
 # many games and see results of them in a
 # barplot.
-show_menu_each_step = False
+show_menu_each_step = True
 
 #Run the game n times with the given policies
 # and store the results.
