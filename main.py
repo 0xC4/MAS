@@ -71,13 +71,11 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
                 if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_OTHER_PLAYER:
                     target_agents.remove(turn_agent)
                     target_agents.append(turn_agent)
-                    printc(target_agents)
 
                 #CHOOSE_THEMSELVES puts self first in the list
                 if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_THEMSELVES:
                     target_agents.remove(turn_agent)
                     target_agents.insert(0,turn_agent)
-                    printc(target_agents)
 
                 for target_agent in target_agents:
                     possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
