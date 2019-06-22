@@ -99,8 +99,8 @@ class KnowledgeStructure:
         all_nodes     = [self.get_nodes_agent(all_relations[agent_idx]) for agent_idx in range(self.amount_agents)]
 
         #add all nodes to the graph
-        for world_idx in range(len(self.valid_worlds)):
-            G.add_node(world_idx)
+        for world in self.valid_worlds:
+            G.add_node([i for i, w in self.enumerated_worlds if world == w][0])
 
         pos=nx.spring_layout(G)
         labels={}       #init empty label dict
@@ -127,7 +127,7 @@ class KnowledgeStructure:
 
     #returns a string version of the given world
     def get_string_version_of_world(self, world_idx):
-        world = self.valid_worlds[world_idx]
+        world = self.enumerated_worlds[world_idx][1]
         info = ""
         for agent_idx in range(self.amount_agents):
             agentworld = world[agent_idx *self.amount_cards:agent_idx *self.amount_cards + self.amount_cards]
