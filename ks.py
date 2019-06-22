@@ -7,39 +7,73 @@ from matplotlib.lines import Line2D
 from policies import Policies
 from gui import ANMT, INFO, VALD
 
+# Implemented announcements
 class Announcements(Enum):
+    # [!] Announcements starting with ONE refer to AT LEAST ONE
+    # [!] Announcements starting with BOTH refer to both two cards
+
+    # Parity announcements
     ONE_ODD         = 0
     ONE_EVEN        = 1
     BOTH_ODD        = 2
     BOTH_EVEN       = 3
+    
+    # Card value announcements where: {LOW=[1,2,3], HIGH=[4,5,6]}
     ONE_HIGH        = 4
     ONE_LOW         = 5
     BOTH_HIGH       = 6
     BOTH_LOW        = 7
+
+    # Multiple of three announcements
     ONE_MUL_THREE   = 8
-    BOTH_MUL_THREE  = 9
-    ONE_DIFF        = 10
+    BOTH_MUL_THREE  = 9 # See NOTE
+    
+    # Card difference announcement (Card values differ by 1)
+    ONE_DIFF        = 10 # Says something about both cards
     
     # K-announcements
-    K_ONE_CARD_A    = 11
-    K_ONE_CARD_B    = 12
-    K_ONE_CARD_C    = 13
-    K_BOTH_CARD_A   = 14
-    K_BOTH_CARD_B   = 15
-    K_BOTH_CARD_C   = 16
+    # Targetted agent knows at least one card of player X
+    K_ONE_CARD_A    = 11 # X = agent A
+    K_ONE_CARD_B    = 12 # " "   "   B
+    K_ONE_CARD_C    = 13 # " "   "   C
+
+    # NOTE: Announcing BOTH_MUL_THREE in the current set-up can logically only
+    #       be done about oneself. For, two multiples of three limits the 
+    #       targets player's cards to [3,6], and logically, knowing an agent's
+    #       both cards, as well as your own, means that you know the last 
+    #       agent's cards as well. We left this in for fun, so that sometimes
+    #       a player has to say it if it is the only announcement possible to
+    #       make.
+
+    # Not implemented, because with current settings, agents cannot make these
+    # announcements about other players without already being the winner.
+    #K_BOTH_CARD_A   = 14 
+    #K_BOTH_CARD_B   = 15
+    #K_BOTH_CARD_C   = 16
 
 class KnowledgeStructure:
     def __init__ (self, amount_agents, amount_cards):
+        # Amount of agents participating in the game (3)
         self.amount_agents  = amount_agents
+        # Amount of cards in the game (6)
         self.amount_cards   = amount_cards
+        # NOTE is this redundant?
         self.num_policies   = len(Policies)
         self.policies       = [Policies.RANDOM, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
+        # The propositional atoms in the model
         self.vocab          = self.generate_vocab(self.amount_agents, self.amount_cards)
+        # Stores the worlds which are still valid for at least one agent with the currently done announcements
         self.valid_worlds   = self.get_valid_worlds()
+        # Pick one world to be the actual current world of the model
         self.initial_world  = self.pick_initial_world(self.valid_worlds)
+        # Set the agents cards using the picked world
         self.observables    = self.make_agents_observables(self.amount_agents, self.initial_world, self.vocab)
+        # Stores the previously made announcements
         self.prev_announced = []
+        # Update the valid worlds by removing the worlds in which no agent has their own cards
         self.valid_worlds   = self.get_worlds_possible_for_agents()
+        # Create an enumerated list of the initial worlds, used for maintaining world numbers after worlds
+        # are deleted from the valid worlds list. Needed for relations and plotting the model with world numbers..
         self.make_enumerated_worlds()
 
     def __repr__(self):
@@ -58,7 +92,7 @@ class KnowledgeStructure:
         #create all relations and nodes in one list
         all_relations   = []
         all_nodes       = []
-        edge_colors = ['b', 'm', 'chartreuse'] #colors of edges
+        edge_colors = ['b', 'm', 'chartreuse'] # Colors of edges
         G=nx.DiGraph()
 
         all_relations = [self.get_relations(agent_idx) for agent_idx in range(self.amount_agents)]
@@ -286,19 +320,25 @@ class KnowledgeStructure:
         # Initial known cards
         for w1 in announcing_agent_worlds:
             known_cards = (self.get_agent_cards(w1, target_agent))
-            
+           
+            # Take one step with K-relations
             for w2 in announcing_agent_worlds:
-                # Source agent cards must remain constant between worlds
 
+                # Source agent cards must remain constant between worlds
                 if not self.get_agent_cards(w1, src_agent) == self.get_agent_cards(w2, src_agent):
                     continue
-                
+               
+                # Update the list of cards that are the same between the related worlds
                 known_cards = [c for c in known_cards if c in self.get_agent_cards(w2, target_agent)]
+                
+                # If there are no cards that remain constant between all related worlds
+                # src agent is not always in a world where he knows one card of target_agent
                 if len(known_cards) < 1:
                     return False
         return True
 
     # Make announcement and apply the new law
+    # If verbose is set to True, print the announcement.
     def announce(self, agent_idx, announcement_type, verbose=True):
         previous_worlds = len(self.valid_worlds)
         
@@ -376,12 +416,15 @@ class KnowledgeStructure:
         # Store the announcement in the list of already made announcements
         self.prev_announced.append(tuple((agent_idx, announcement_type)))
         
+        # Report on the amount of valid worlds that have been removed, and the amount of valid worlds 
+        # that remain for each agent.
         if verbose: 
             print (INFO + " Worlds removed:   {}".format(previous_worlds - len(self.valid_worlds)))
             print ("    Worlds remaining: {}".format(len(self.valid_worlds)))
             self.print_agent_valid_worlds()
 
     # Create agents and their respective observables
+    # Also contains information about the policy of the agent.
     def make_agents_observables(self, amount_agents, init_world, vocab):
         agents = list()
         for i in range(amount_agents):
@@ -392,7 +435,7 @@ class KnowledgeStructure:
             agents.append(agent)
         return agents
 
-    # Picks a random initial world
+    # Picks a random initial world as the actual world as a random sample of the valid worlds
     def pick_initial_world(self, valid_worlds):
         return random.sample (valid_worlds, 1)[0]
 
@@ -406,21 +449,34 @@ class KnowledgeStructure:
     def get_agent_valid_worlds(self, agent_idx):
         worlds = []
         for world in self.valid_worlds:
+            # Take the intersection of all valid worlds, and the worlds where the agent
+            # has the cards which he actually has.
             if all([world[obs] for obs in self.observables[agent_idx]["observations"]]):
                 worlds.append(world)
         return worlds
-
+    
+    # Print the valid worlds for each agent in the knowledgestructure.
     def print_agent_valid_worlds(self):
         print (VALD + " Valid worlds:")
         for agent_idx in range(self.amount_agents):
             print ("    Agent {}: {}".format("abcdefghijklmnopqrstuvwxyz"[agent_idx], len(self.get_agent_valid_worlds(agent_idx))))
-
+    
+    # Determines whether an agent is allowed to make a given announcement about a given target
+    # agent. Evaluates if the agent is totally certain about the announcement, and whether the 
+    # announcement has been made before.
+    # Applies the announcement laws to all valid worlds for the agent, to see if it holds in all of them.
     def announcement_allowed(self, announcing_agent_idx, target_agent_idx, announcement_type):
         # Don't allow the same announcement about same agent's cards twice
         if (tuple((target_agent_idx, announcement_type)) in self.prev_announced):
             return False
+        
+        # Get the current valid worlds for the announcing agent
         worlds = self.get_agent_valid_worlds(announcing_agent_idx)
+
+        # Loop over all of them
         for world in worlds: 
+
+            # Check if the law associated with the announcement holds 
             if announcement_type == Announcements.ONE_ODD:
                 if not self.one_odd_card_law(target_agent_idx, world):
                     return False
@@ -455,7 +511,9 @@ class KnowledgeStructure:
                 if not self.one_diff_card_law(target_agent_idx, world):
                     return False
         
-        # K-Announcements
+        # K-Announcements loop over more than the valid worlds of the announcing agent
+        # since they pertain to the knowledge of the targetted agent. Therefor we 
+        # loop seperately within the law.
         if announcement_type == Announcements.K_ONE_CARD_A:
             if not self.knows_one_card_law(target_agent_idx, 0):
                 return False
@@ -467,12 +525,20 @@ class KnowledgeStructure:
         if announcement_type == Announcements.K_ONE_CARD_C:
             if not self.knows_one_card_law(target_agent_idx, 2):
                 return False
-
+        
+        # If the announcement law holds in all worlds, return true
         return True
 
+    # Returns a list of the announcements which an agent is allowed to make with
+    # the inferences that it can make combining the knowledge of their own cards,
+    # as well as the knowledge obtained from the public announcements made by 
+    # other agents.
     def allowed_announcements(self, agent_idx, target_agent_idx):
         announcements = []
+        # Loop over all announcements
         for announcement_type in [Announcements.BOTH_ODD, Announcements.BOTH_EVEN, Announcements.ONE_EVEN, Announcements.ONE_ODD, Announcements.ONE_LOW, Announcements.ONE_HIGH, Announcements.BOTH_HIGH, Announcements.BOTH_LOW, Announcements.ONE_MUL_THREE, Announcements.BOTH_MUL_THREE, Announcements.ONE_DIFF, Announcements.K_ONE_CARD_A, Announcements.K_ONE_CARD_B, Announcements.K_ONE_CARD_C]:
+            # if the announcement can be made with certainty by the agent with its current knowledge
             if self.announcement_allowed(agent_idx, target_agent_idx, announcement_type):
+                # Append it to the list of allowed announcements
                 announcements.append(announcement_type)
         return announcements
