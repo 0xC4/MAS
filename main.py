@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from enum import Enum
 from policies import Policies
-from gui import GUI
+from gui import GUI, bcolors
 
 P_AMOUNT_AGENTS = 3
 P_AMOUNT_CARDS  = P_AMOUNT_AGENTS * 2
@@ -21,6 +21,11 @@ def print_world(world, vocab):
 
 def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies.RANDOM], show_menu_each_step=True):
     
+    # Only prints if we are running in step mode
+    def printc (string):
+        if show_menu_each_step:
+            print (string)
+
     winners = []
     for game_idx in range(amt_games):
         knowledgestructure = KnowledgeStructure(amount_agents=P_AMOUNT_AGENTS, amount_cards=P_AMOUNT_CARDS)
@@ -29,9 +34,12 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
             knowledgestructure.observables[idx]["policy"] = policy
 
         gui = GUI(ks=knowledgestructure)
-        print (knowledgestructure)
+        
+        printc(bcolors.HEADER + "\n\n--- NEW GAME [{} of {}] ---".format(game_idx + 1, n)+ bcolors.ENDC)
+        printc(knowledgestructure)
 
-        print_world(knowledgestructure.initial_world, knowledgestructure.vocab)
+        if show_menu_each_step:
+            print_world(knowledgestructure.initial_world, knowledgestructure.vocab)
 
         remainingworlds = []
 
@@ -61,13 +69,13 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
                 if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_OTHER_PLAYER:
                     target_agents.remove(turn_agent)
                     target_agents.append(turn_agent)
-                    print(target_agents)
+                    printc(target_agents)
 
                 #CHOOSE_THEMSELVES puts self first in the list
                 if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_THEMSELVES:
                     target_agents.remove(turn_agent)
                     target_agents.insert(0,turn_agent)
-                    print(target_agents)
+                    printc(target_agents)
 
                 for target_agent in target_agents:
                     possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
@@ -78,9 +86,9 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
                         continue
                     
                     # Otherwise make one of the possible announcements about this agent
-                    print ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
-                    print(knowledgestructure.observables[turn_agent]["policy"])
-                    knowledgestructure.announce(target_agent, random.sample(possible_announcements, 1)[0])
+                    printc ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
+                    printc(knowledgestructure.observables[turn_agent]["policy"])
+                    knowledgestructure.announce(target_agent, random.sample(possible_announcements, 1)[0], verbose=show_menu_each_step)
                     announcement_made = True
                     break
 
@@ -105,14 +113,14 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
                             best_announcement = (target_agent, announcement)
                         knowledgestructure.valid_worlds = old_worlds
                 if best_announcement != None:
-                    print(best_announcement)
-                    print ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
-                    print(knowledgestructure.observables[turn_agent]["policy"])
-                    knowledgestructure.announce(best_announcement[0], best_announcement[1])
+                    printc(best_announcement)
+                    printc ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
+                    printc(knowledgestructure.observables[turn_agent]["policy"])
+                    knowledgestructure.announce(best_announcement[0], best_announcement[1], verbose=False)
                     announcement_made = True
 
             if not announcement_made:
-                print ("Agent {} passes because he cannot make any valid announcements.".format("abcdefghij"[turn_agent]))
+                printc ("Agent {} passes because he cannot make any valid announcements.".format("abcdefghij"[turn_agent]))
                 pass_count += 1
                 if pass_count >= P_AMOUNT_AGENTS:
                     turn_agent = -1
@@ -123,14 +131,14 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
             remainingworlds = len(knowledgestructure.get_agent_valid_worlds(turn_agent))
 
         if turn_agent == -1:
-            print ("The game ended in a TIE, no player can make a valid announcement anymore.")
+            print ("[Game {} of {}] The game ended in a TIE, no player can make a valid announcement anymore.".format(game_idx + 1, n))
         else:
-            winners.append(get_policy_label(turn_agent, knowledgestructure))
+            winners.append(get_policy_label(turn_agent, knowledgestructure, game_idx, n))
     return winners
 
 #returns the policy label used in the histogram plot
-def get_policy_label(turn_agent, knowledgestructure):
-    print ("Winner: Player {} with policy : ({})".format("abcdefg"[turn_agent], knowledgestructure.observables[turn_agent]["policy"]))
+def get_policy_label(turn_agent, knowledgestructure, game_idx, n):
+    print ("[Game {} of {}] Winner: Player {} with policy : ({})".format(game_idx + 1, n,"abcdefg"[turn_agent], knowledgestructure.observables[turn_agent]["policy"]))
     winner_label = "Agent "
     winner_label += "abcdefg"[turn_agent]
     winner_label += ": "
@@ -154,7 +162,7 @@ def plot_win_hist(win_results):
 
 ############################################################################
 #the amount of games that will be played
-n = 10000
+n = 100
 
 #Choose a policy for each agent:
     # RANDOM                  = 0     #Chooses a random possible move
@@ -168,7 +176,7 @@ policy_set = [Policies.RANDOM, Policies.RANDOM, Policies.RANDOM]
 # in the game. If set to False, you can run
 # many games and see results of them in a
 # histogram.
-show_menu_each_step = False
+show_menu_each_step = True
 
 #Turn up to increase number of games played. 
 # Printed output printed is not suppressed
