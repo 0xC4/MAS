@@ -215,7 +215,7 @@ plot_filename = create_plot_filename(policy_set, n)
 # in the game. If set to False, you can run
 # many games and see results of them in a
 # barplot.
-show_menu_each_step = True
+show_menu_each_step = False
 
 #Run the game n times with the given policies
 # and store the results.
