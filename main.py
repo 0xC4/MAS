@@ -61,7 +61,7 @@ def run_game(amt_games=1):
                            print ("[P{}->{}] ".format(agent, target_agent) + str(knowledgestructure.allowed_announcements(agent, target_agent)))
                 if choice == 2:
                     for i in range(P_AMOUNT_AGENTS):
-                        print ("Agent {} has: {}".format("abcd"[i], knowledgestructure.get_agent_cards(knowledgestructure.initial_world, i)))
+                        print ("Agent {} has: {}".format("abcd"[i], [c+1 for c in knowledgestructure.get_agent_cards(knowledgestructure.initial_world, i)]))
                 if choice == 3:
                     idx = 0
                     for agent, announcement in knowledgestructure.prev_announced:
