@@ -160,11 +160,11 @@ def plot_win_hist(win_results):
     for i in win_results:
         counts[i] = counts.get(i, 0) + 1
 
-    plt.bar(list(counts.keys()), counts.values(), color='g')
+    plt.bar(list(counts.keys()), counts.values(), color='c')
     plt.title("Win counts of each player")
     plt.ylabel("Win count")
     plt.xlabel("Player ID")
     plt.show()
 
-win_results = run_game(1)       #Turn up to increase number of games played. Printed output printed is not suppressed yet, sorry for this. A 1000 games will take about a minute to compute.
+win_results = run_game(100)       #Turn up to increase number of games played. Printed output printed is not suppressed yet, sorry for this. A 1000 games will take about a minute to compute.
 plot_win_hist(win_results)
