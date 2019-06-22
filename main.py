@@ -5,9 +5,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from enum import Enum
 from policies import Policies
+from gui import GUI
 
 P_AMOUNT_AGENTS = 3
 P_AMOUNT_CARDS  = P_AMOUNT_AGENTS * 2
+
+# Initialize the GUI class for showing the menu etc.
 
 def print_world(world, vocab):
     true_idxs = [idx for idx, truth_value in enumerate(world) if truth_value == True] 
@@ -21,6 +24,7 @@ def run_game(amt_games=1, show_menu_each_step=True):
     for game_idx in range(amt_games):
         knowledgestructure = KnowledgeStructure(amount_agents=P_AMOUNT_AGENTS, amount_cards=P_AMOUNT_CARDS)
 
+        gui = GUI(ks=knowledgestructure)
         print (knowledgestructure)
 
         print_world(knowledgestructure.initial_world, knowledgestructure.vocab)
@@ -38,42 +42,10 @@ def run_game(amt_games=1, show_menu_each_step=True):
             # The agent has not made an announcement yet
             announcement_made = False
             
-            choice = -1
-            while choice != 0:
-                print ()
-                print ("# MENU")
-                print ("[3] Show made announcements")
-                print ("[2] Show agent holdings")
-                print ("[1] Show possible announcements")
-                print ("[ENTER] Next step")
-                if show_menu_each_step:
-                    choice = input()
-                else:
-                    choice = 0
-                print ()
-                print ("----")
-                print ()
-                if choice == "":
-                    choice = 0
-                else:
-                    choice = int (choice)
-                if choice == 1:
-                    for agent in range(P_AMOUNT_AGENTS):
-                        for target_agent in range(P_AMOUNT_AGENTS):
-                           print ("[P{}->{}] ".format(agent, target_agent) + str(knowledgestructure.allowed_announcements(agent, target_agent)))
-                if choice == 2:
-                    for i in range(P_AMOUNT_AGENTS):
-                        print ("Agent {} has: {}".format("abcd"[i], [c+1 for c in knowledgestructure.get_agent_cards(knowledgestructure.initial_world, i)]))
-                if choice == 3:
-                    idx = 0
-                    for agent, announcement in knowledgestructure.prev_announced:
-                        print ("Agent {} announced: Agent {}, {}".format("abcd"[idx%3], "abcd"[agent], announcement))
-                        idx += 1
-                
-                if choice != 0:
-                    print ()
-                    print ("----")
-                    print ()
+            # Show the menu
+            if show_menu_each_step:
+                gui.show_menu()
+            
             target_agents = list(range(P_AMOUNT_AGENTS))
 
             #Apply Policies

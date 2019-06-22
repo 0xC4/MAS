@@ -5,20 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from policies import Policies
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
-    
-ANMT = bcolors.FAIL + "[A]" + bcolors.ENDC
-INFO = bcolors.OKBLUE + "[I]" + bcolors.ENDC
-VALD = bcolors.WARNING + "[V]" + bcolors.ENDC
+from gui import ANMT, INFO, VALD
 
 class Announcements(Enum):
     ONE_ODD         = 0
