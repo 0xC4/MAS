@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from enum import Enum
 from policies import Policies
+import os
 
 P_AMOUNT_AGENTS = 3
 P_AMOUNT_CARDS  = P_AMOUNT_AGENTS * 2
@@ -156,7 +157,7 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
             winners.append(get_policy_label(turn_agent, knowledgestructure))
     return winners
 
-#returns the policy label used in the histogram plot
+#returns the policy label used in the barplot
 def get_policy_label(turn_agent, knowledgestructure):
     print ("Winner: Player {} with policy : ({})".format("abcdefg"[turn_agent], knowledgestructure.observables[turn_agent]["policy"]))
     winner_label = "Agent "
@@ -167,22 +168,55 @@ def get_policy_label(turn_agent, knowledgestructure):
     winner_label = winner_label.lower()
     return winner_label
 
-
-#plot a histogram that shows win results for each player
-def plot_win_hist(win_results):    
+#plot a barplot that shows win results for each player
+#by default the plot is NOT saved to a file.
+def plot_bar_plot(win_results, plot_filename, do_save_figure=False):
     counts = dict()
     for i in win_results:
         counts[i] = counts.get(i, 0) + 1
 
-    plt.bar(list(counts.keys()), counts.values(), color='c')
-    plt.title("Win counts of each player")
-    plt.ylabel("Win count")
-    plt.xlabel("Policy of player")
+    plt.rcdefaults()
+    
+    fig, ax = plt.subplots()
+    agents  = list(counts.keys())
+    y_pos   = np.arange(len(agents))
+    wins    = list(counts.values())
+    
+    for idx, agent in enumerate(agents):
+        agents[idx] = agent.replace(" ", "\n")
+
+    ax.barh(y_pos, wins, align='center', color='c')
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(agents)
+    ax.invert_yaxis()  # labels read top-to-bottom
+    ax.set_xlabel("Win Count")
+    ax.set_title("Win counts for each Agent")
+    if do_save_figure:
+        plt.savefig(plot_filename)
+        print("\nWrote (file) plot to: " + plot_filename)
     plt.show()
+
+#creates a plot filename based on program settings/parameters
+def create_plot_filename(policy_set, number_of_games_played):
+    plot_path = "plots/"
+
+    if not os.path.exists(plot_path):
+        os.mkdir(plot_path)
+        print("Directory ",plot_path," Created ")
+    else:
+        print("Directory ",plot_path," already exists")
+
+    plot_path += "games_" + str(number_of_games_played) + "-"
+    for policy in policy_set:
+        plot_path += str(policy).lower()[9:].replace(" ", "_")
+        plot_path += "-"
+    plot_path = plot_path[:-1]
+    plot_path += ".png"
+    return plot_path
 
 ############################################################################
 #the amount of games that will be played
-n = 10000
+n = 25
 
 #Choose a policy for each agent:
     # RANDOM                  = 0     #Chooses a random possible move
@@ -190,18 +224,24 @@ n = 10000
     # CHOOSE_THEMSELVES 	  = 2     #Favors choosing an announcement about himself rather than about another player.
     # ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
     # ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
-policy_set = [Policies.RANDOM, Policies.RANDOM, Policies.RANDOM]
+policy_set = [Policies.CHOOSE_THEMSELVES, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_OTHER_PLAYER]
+
+#Create a plot filename based on program input 
+# parameters (policies and amount of games played).
+plot_filename = create_plot_filename(policy_set, n)
 
 #Set to true if you want a menu after each step
 # in the game. If set to False, you can run
 # many games and see results of them in a
-# histogram.
+# barplot.
 show_menu_each_step = False
 
-#Turn up to increase number of games played. 
-# Printed output printed is not suppressed
-# yet, sorry for this. A 1000 games will 
-# take about a minute to compute.
+#Run the game n times with the given policies
+# and store the results.
 win_results = run_game(n, policy_set, show_menu_each_step)
-if not show_menu_each_step and n>1:             #you probably do not want a histogram if you play just one game
-    plot_win_hist(win_results)
+
+#Show a barplot of each player and policy, if
+# you play more than one game and have the
+# menu turned off.
+if not show_menu_each_step and n>1:
+    plot_bar_plot(win_results, plot_filename, do_save_figure=True)
