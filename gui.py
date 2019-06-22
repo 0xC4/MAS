@@ -1,3 +1,4 @@
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -11,6 +12,37 @@ class bcolors:
 ANMT = bcolors.FAIL + "[A]" + bcolors.ENDC
 INFO = bcolors.OKBLUE + "[I]" + bcolors.ENDC
 VALD = bcolors.WARNING + "[V]" + bcolors.ENDC
+
+def get_announcement_string(a):
+    from ks import Announcements
+    if a == Announcements.ONE_ODD:
+        return "Agent {} has at least one odd card"
+    if a == Announcements.BOTH_ODD:
+        return "Agent {} has two odd cards"
+    if a == Announcements.ONE_HIGH:
+        return "Agent {} has at least one high card"
+    if a == Announcements.BOTH_HIGH:
+        return "Agent {} has two high cards"
+    if a == Announcements.ONE_LOW:
+        return "Agent {} has at least one low card"
+    if a == Announcements.BOTH_LOW:
+        return "Agent {} has two low cards"
+    if a == Announcements.ONE_EVEN:
+        return "Agent {} has at least one even card"
+    if a == Announcements.BOTH_EVEN:
+        return "Agent {} has two even cards"
+    if a == Announcements.ONE_DIFF:
+        return "Agent {} has two cards that are 1 number apart"
+    if a == Announcements.ONE_MUL_THREE:
+        return "Agent {} has at least one card that is a multiple of three"
+    if a == Announcements.BOTH_MUL_THREE:
+        return "Agent {} has two cards that are a multiple of three"
+    if a == Announcements.K_ONE_CARD_A:
+        return "Agent {} knows one card of agent a"
+    if a == Announcements.K_ONE_CARD_B:
+        return "Agent {} knows one card of agent b"
+    if a == Announcements.K_ONE_CARD_C:
+        return "Agent {} knows one card of agent c"
 
 class GUI:
     def __init__(self, ks):
@@ -36,11 +68,11 @@ class GUI:
                 choice = int (choice)
             if choice == 1:
                 for agent in range(self.knowledgestructure.amount_agents):
+                    print (bcolors.HEADER + "Possible announcements for agent {}".format("ABCD"[agent]) + bcolors.ENDC)
                     for target_agent in range(self.knowledgestructure.amount_agents):
-                        print (bcolors.HEADER + "Agent {} about {}".format("abcd"[agent], "abcd"[target_agent]) + bcolors.ENDC)
                         for ann in self.knowledgestructure.allowed_announcements(agent, target_agent):
-                            print (str(ann))
-                        print ()
+                            print (get_announcement_string(ann).format("abcd"[target_agent]))
+                    print ()
             if choice == 2:
                 for i in range(self.knowledgestructure.amount_agents):
                      print ("Agent {} has: {}".format("abcd"[i], [c+1 for c in self.knowledgestructure.get_agent_cards(self.knowledgestructure.initial_world, i)]))
