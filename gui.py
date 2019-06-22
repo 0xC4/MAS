@@ -37,7 +37,10 @@ class GUI:
             if choice == 1:
                 for agent in range(self.knowledgestructure.amount_agents):
                     for target_agent in range(self.knowledgestructure.amount_agents):
-                        print ("[P{}->{}] ".format(agent, target_agent) + str(self.knowledgestructure.allowed_announcements(agent, target_agent)))
+                        print (bcolors.HEADER + "Agent {} about {}".format("abcd"[agent], "abcd"[target_agent]) + bcolors.ENDC)
+                        for ann in self.knowledgestructure.allowed_announcements(agent, target_agent):
+                            print (str(ann))
+                        print ()
             if choice == 2:
                 for i in range(self.knowledgestructure.amount_agents):
                      print ("Agent {} has: {}".format("abcd"[i], [c+1 for c in self.knowledgestructure.get_agent_cards(self.knowledgestructure.initial_world, i)]))
