@@ -205,7 +205,7 @@ n = 1000
     # CHOOSE_THEMSELVES 	  = 2     #Favors choosing an announcement about himself rather than about another player.
     # ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
     # ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
-policy_set = [Policies.CHOOSE_THEMSELVES, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
+policy_set = [Policies.RANDOM, Policies.RANDOM, Policies.RANDOM]
 
 #Create a plot filename based on program input 
 # parameters (policies and amount of games played).
