@@ -63,7 +63,7 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
             target_agents = list(range(P_AMOUNT_AGENTS))
 
             #RANDOM, CHOOSE_OTHER_PLAYER, CHOOSE_THEMSELVES
-            if knowledgestructure.observables[turn_agent]["policy"] in policy_set:
+            if knowledgestructure.observables[turn_agent]["policy"] not in [Policies.ARGMIN, Policies.ARGMAX]:
 
                 random.shuffle(target_agents)
 
@@ -71,13 +71,11 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
                 if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_OTHER_PLAYER:
                     target_agents.remove(turn_agent)
                     target_agents.append(turn_agent)
-                    printc(target_agents)
 
                 #CHOOSE_THEMSELVES puts self first in the list
                 if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_THEMSELVES:
                     target_agents.remove(turn_agent)
                     target_agents.insert(0,turn_agent)
-                    printc(target_agents)
 
                 for target_agent in target_agents:
                     possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
@@ -95,8 +93,10 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
                     break
 
             #ARGMIN, ARGMAX
-            if knowledgestructure.observables[turn_agent]["policy"] in [Policies.ARGMIN, Policies.ARGMAX]:
+            if not announcement_made and knowledgestructure.observables[turn_agent]["policy"] in [Policies.ARGMIN, Policies.ARGMAX]:
                 possible_announcements = []
+                old_worlds = knowledgestructure.valid_worlds.copy()
+                prev_announced = knowledgestructure.prev_announced.copy()
                 best_announcement = None
                 if knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMIN:
                     num_worlds = 1000
@@ -105,8 +105,7 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
                 for target_agent in target_agents:
                     possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
                     for announcement in possible_announcements:
-                        old_worlds = knowledgestructure.valid_worlds
-                        knowledgestructure.announce(target_agent, announcement)
+                        knowledgestructure.announce(target_agent, announcement, verbose=False)
                         if knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMIN and len(knowledgestructure.valid_worlds) < num_worlds:
                             num_worlds = len(knowledgestructure.valid_worlds)
                             best_announcement = (target_agent, announcement)
@@ -114,12 +113,14 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
                             num_worlds = len(knowledgestructure.valid_worlds)
                             best_announcement = (target_agent, announcement)
                         knowledgestructure.valid_worlds = old_worlds
+                        knowledgestructure.prev_announced = prev_announced
                 if best_announcement != None:
                     printc(best_announcement)
                     printc ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
                     printc(knowledgestructure.observables[turn_agent]["policy"])
-                    knowledgestructure.announce(best_announcement[0], best_announcement[1], verbose=False)
+                    knowledgestructure.announce(best_announcement[0], best_announcement[1], verbose=show_menu_each_step)
                     announcement_made = True
+                    continue
 
             if not announcement_made:
                 printc ("Agent {} passes because he cannot make any valid announcements.".format("abcdefghij"[turn_agent]))
@@ -205,7 +206,7 @@ n = 1000
     # CHOOSE_THEMSELVES 	  = 2     #Favors choosing an announcement about himself rather than about another player.
     # ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
     # ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
-policy_set = [Policies.CHOOSE_THEMSELVES, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
+policy_set = [Policies.ARGMAX, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
 
 #Create a plot filename based on program input 
 # parameters (policies and amount of games played).
