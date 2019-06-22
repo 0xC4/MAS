@@ -138,7 +138,7 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
             winners.append(get_policy_label(turn_agent, knowledgestructure, game_idx, n))
     return winners
 
-#returns the policy label used in the histogram plot
+#returns the policy label used in the barplot
 def get_policy_label(turn_agent, knowledgestructure, game_idx, n):
     print ("[Game {} of {}] Winner: Player {} with policy : ({})".format(game_idx + 1, n,"abcdefg"[turn_agent], knowledgestructure.observables[turn_agent]["policy"]))
     winner_label = "Agent "
@@ -214,7 +214,7 @@ plot_filename = create_plot_filename(policy_set, n)
 #Set to true if you want a menu after each step
 # in the game. If set to False, you can run
 # many games and see results of them in a
-# histogram.
+# barplot.
 show_menu_each_step = True
 
 #Run the game n times with the given policies
