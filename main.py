@@ -63,69 +63,51 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
             target_agents = list(range(P_AMOUNT_AGENTS))
 
             #RANDOM, CHOOSE_OTHER_PLAYER, CHOOSE_THEMSELVES
-            if knowledgestructure.observables[turn_agent]["policy"] in policy_set:
+            random.shuffle(target_agents)
 
-                random.shuffle(target_agents)
+            #CHOOSE_OTHER_PLAYER puts self last in the list
+            if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_OTHER_PLAYER:
+                target_agents.remove(turn_agent)
+                target_agents.append(turn_agent)
 
-                #CHOOSE_OTHER_PLAYER puts self last in the list
-                if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_OTHER_PLAYER:
-                    target_agents.remove(turn_agent)
-                    target_agents.append(turn_agent)
+            #CHOOSE_THEMSELVES puts self first in the list
+            if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_THEMSELVES:
+                target_agents.remove(turn_agent)
+                target_agents.insert(0,turn_agent)
+            
+            # Create list of all possible target_announcements
+            possible_announcements = []
+            for t in target_agents:
+                additional_announcements = knowledgestructure.allowed_announcements(turn_agent, t)
+                random.shuffle(additional_announcements)
+                possible_announcements += [(t, a) for a in additional_announcements]
 
-                #CHOOSE_THEMSELVES puts self first in the list
-                if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_THEMSELVES:
-                    target_agents.remove(turn_agent)
-                    target_agents.insert(0,turn_agent)
-
-                for target_agent in target_agents:
-                    possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
-                    
-                    # Player cannot make an announcement about this target agent
-                    if len(possible_announcements) < 1:
-                        # Move to next target agent
-                        continue
-                    
-                    # Otherwise make one of the possible announcements about this agent
-                    printc ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
-                    printc(knowledgestructure.observables[turn_agent]["policy"])
-                    knowledgestructure.announce(target_agent, random.sample(possible_announcements, 1)[0], verbose=show_menu_each_step)
-                    announcement_made = True
-                    break
-
-            #ARGMIN, ARGMAX
-            if knowledgestructure.observables[turn_agent]["policy"] in [Policies.ARGMIN, Policies.ARGMAX]:
-                possible_announcements = []
-                best_announcement = None
-                if knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMIN:
-                    num_worlds = 1000
-                elif knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMAX:
-                    num_worlds = 0
-                for target_agent in target_agents:
-                    possible_announcements = knowledgestructure.allowed_announcements(turn_agent, target_agent)
-                    for announcement in possible_announcements:
-                        old_worlds = knowledgestructure.valid_worlds
-                        knowledgestructure.announce(target_agent, announcement)
-                        if knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMIN and len(knowledgestructure.valid_worlds) < num_worlds:
-                            num_worlds = len(knowledgestructure.valid_worlds)
-                            best_announcement = (target_agent, announcement)
-                        elif knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMAX and len(knowledgestructure.valid_worlds) > num_worlds:
-                            num_worlds = len(knowledgestructure.valid_worlds)
-                            best_announcement = (target_agent, announcement)
-                        knowledgestructure.valid_worlds = old_worlds
-                if best_announcement != None:
-                    printc(best_announcement)
-                    printc ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
-                    printc(knowledgestructure.observables[turn_agent]["policy"])
-                    knowledgestructure.announce(best_announcement[0], best_announcement[1], verbose=False)
-                    announcement_made = True
-
-            if not announcement_made:
-                printc ("Agent {} passes because he cannot make any valid announcements.".format("abcdefghij"[turn_agent]))
+            # If we have no possible announcements --> Skip turn
+            if len(possible_announcements) < 1:
                 pass_count += 1
-                if pass_count >= P_AMOUNT_AGENTS:
-                    turn_agent = -1
-                    break
                 continue
+            else:
+                pass_count =  0
+
+            if knowledgestructure.observables[turn_agent]["policy"] in [Policies.CHOOSE_THEMSELVES, Policies.RANDOM, Policies.CHOOSE_OTHER_PLAYER]:
+                # MAKE RANDOM CHOICE
+                # Take one out the list randomly
+                best_announcement = random.sample(possible_announcements, 1)[0]
+                
+            if knowledgestructure.observables[turn_agent]["policy"] in [Policies.ARGMIN, Policies.ARGMAX]:
+                scores = [knowledgestructure.announce(t, a, verbose=False, simulate=True) for (t, a) in possible_announcements]
+                if knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMAX:
+                    best_announcement = possible_announcements[scores.index(max(scores))]
+                elif knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMIN:   
+                    best_announcement = possible_announcements[scores.index(min(scores))] 
+            
+            # Make the selected announcement
+            t, a = best_announcement
+            printc ("Agent {} announces: ".format("abcdefghij"[turn_agent]))
+            printc(knowledgestructure.observables[turn_agent]["policy"])
+            knowledgestructure.announce(t, a, verbose=show_menu_each_step, simulate=False)
+            
+            announcement_made = True
 
             # If the turn player has only one valid world remaining, he knows everyones cards and wins the game
             remainingworlds = len(knowledgestructure.get_agent_valid_worlds(turn_agent))
@@ -203,7 +185,7 @@ n = 1000
     # CHOOSE_THEMSELVES 	  = 2     #Favors choosing an announcement about himself rather than about another player.
     # ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
     # ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
-policy_set = [Policies.CHOOSE_THEMSELVES, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
+policy_set = [Policies.ARGMAX, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
 
 #Create a plot filename based on program input 
 # parameters (policies and amount of games played).
@@ -213,7 +195,7 @@ plot_filename = create_plot_filename(policy_set, n)
 # in the game. If set to False, you can run
 # many games and see results of them in a
 # barplot.
-show_menu_each_step = True
+show_menu_each_step = False
 
 #Run the game n times with the given policies
 # and store the results.
