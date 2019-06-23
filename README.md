@@ -14,7 +14,8 @@ The program can be run from the 'MAS/' directory with the command: python3 main.
 
 ### Parameters:
 1. n
-    Amount of games to be played.
+
+Amount of games to be played.
 2. m
     Amount of experiments run. Default set to 10. Will result in an average win count over 10 experiments.
     A total of m*n games will be played.
