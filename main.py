@@ -232,7 +232,9 @@ def create_plot_filename(policy_set, number_of_games_played):
     plot_path += ".png"
     return plot_path
 
-
+#This function runs a whole experiment. But this experiment is
+# done avg_amount of times so that we can take an average of
+# these later. In order to make a nice error bar plot.
 def run_avg_experiment(avg_amount, amount, policy_set, do_save_figure, do_show_figure, plot_filename, show_menu_each_step):
     agent_a_win_count_list = []
     agent_b_win_count_list = []
@@ -266,11 +268,11 @@ def run_avg_experiment(avg_amount, amount, policy_set, do_save_figure, do_show_f
 
 ########################################################
 #the amount of games that will be played
-n = 50
+n = 100
 
 #average amount. There will be n number of games m times
 # This to ensure we can plot a barplot with standard deviation.
-m = 4
+m = 10
 ## AMOUNT OF GAMES PLAYED IN TOTAL : m*n 
 
 
@@ -282,9 +284,7 @@ m = 4
 do_save_figure = True
 
 #whether you want to a see a barplot of an individual game
-do_show_figure = True
-
-
+do_show_figure = False
 
 #Set to true if you want a menu after each step
 # in the game. If set to False, you can run
