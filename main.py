@@ -37,7 +37,7 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
 
         gui = GUI(ks=knowledgestructure)
         
-        printc(bcolors.HEADER + "\n\n--- NEW GAME [{} of {}] ---".format(game_idx + 1, n)+ bcolors.ENDC)
+        printc(bcolors.HEADER + "\n\n--- NEW GAME [{} of {}] ---".format(game_idx + 1, amt_games)+ bcolors.ENDC)
         printc(knowledgestructure)
 
         if show_menu_each_step:
@@ -45,16 +45,15 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
 
         remainingworlds = []
 
-        turn_agent = -1
+        # turn_agent = -1
         pass_count = 0
 
+        turn_agent = random.sample([0,1,2], 1)[0]           #randomly determine who will begin the game.
+        
         while remainingworlds != 1: # As long as one player does not have all the knowledge
 
             # Keep moving to the next player
-            turn_agent = (turn_agent + 1) % P_AMOUNT_AGENTS
-
-            # The agent has not made an announcement yet
-            announcement_made = False
+            turn_agent = (turn_agent+1) % P_AMOUNT_AGENTS
             
             # Show the menu
             if show_menu_each_step:
@@ -63,7 +62,7 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
             target_agents = list(range(P_AMOUNT_AGENTS))
 
             #RANDOM, CHOOSE_OTHER_PLAYER, CHOOSE_THEMSELVES
-            random.shuffle(target_agents)
+            target_agents = random.sample(target_agents, len(target_agents))
 
             #CHOOSE_OTHER_PLAYER puts self last in the list
             if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_OTHER_PLAYER:
@@ -79,21 +78,40 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
             possible_announcements = []
             for t in target_agents:
                 additional_announcements = knowledgestructure.allowed_announcements(turn_agent, t)
-                random.shuffle(additional_announcements)
+                additional_announcements = random.sample(additional_announcements, len(additional_announcements))
                 possible_announcements += [(t, a) for a in additional_announcements]
 
             # If we have no possible announcements --> Skip turn
             if len(possible_announcements) < 1:
                 pass_count += 1
+                # print("agent passing turn")
                 continue
             else:
                 pass_count =  0
 
-            if knowledgestructure.observables[turn_agent]["policy"] in [Policies.CHOOSE_THEMSELVES, Policies.RANDOM, Policies.CHOOSE_OTHER_PLAYER]:
-                # MAKE RANDOM CHOICE
-                # Take one out the list randomly
+            if knowledgestructure.observables[turn_agent]["policy"] == Policies.RANDOM:
                 best_announcement = random.sample(possible_announcements, 1)[0]
-                
+
+            if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_OTHER_PLAYER:
+                not_himself_announcements = []
+                for t, a in possible_announcements:
+                    if t != turn_agent:
+                        not_himself_announcements.append((t,a))
+                if len(not_himself_announcements) == 0:                 #agent cannot say anything valid about someone else
+                    best_announcement = random.sample(possible_announcements, 1)[0]
+                else:
+                    best_announcement = random.sample(not_himself_announcements, 1)[0]
+
+            if knowledgestructure.observables[turn_agent]["policy"] == Policies.CHOOSE_THEMSELVES:
+                himself_announcements = []
+                for t, a in possible_announcements:
+                    if t == turn_agent:
+                        himself_announcements.append((t,a))
+                if len(himself_announcements) == 0:                 #agent cannot say anything valid about someone else
+                    best_announcement = random.sample(possible_announcements, 1)[0]
+                else:
+                    best_announcement = random.sample(himself_announcements, 1)[0]
+                        
             if knowledgestructure.observables[turn_agent]["policy"] in [Policies.ARGMIN, Policies.ARGMAX]:
                 scores = [knowledgestructure.announce(t, a, verbose=False, simulate=True) for (t, a) in possible_announcements]
                 if knowledgestructure.observables[turn_agent]["policy"] == Policies.ARGMAX:
@@ -107,15 +125,14 @@ def run_game(amt_games=1, policy_set=[Policies.RANDOM, Policies.RANDOM, Policies
             printc(knowledgestructure.observables[turn_agent]["policy"])
             knowledgestructure.announce(t, a, verbose=show_menu_each_step, simulate=False)
             
-            announcement_made = True
-
             # If the turn player has only one valid world remaining, he knows everyones cards and wins the game
             remainingworlds = len(knowledgestructure.get_agent_valid_worlds(turn_agent))
 
-        if turn_agent == -1:
-            print ("[Game {} of {}] The game ended in a TIE, no player can make a valid announcement anymore.".format(game_idx + 1, n))
+        if pass_count == 3:
+            print ("[Game {} of {}] The game ended in a TIE, no player can make a valid announcement anymore.".format(game_idx + 1, amt_games))
+            continue
         else:
-            winners.append(get_policy_label(turn_agent, knowledgestructure, game_idx, n))
+            winners.append(get_policy_label(turn_agent, knowledgestructure, game_idx, amt_games))
     return winners
 
 #returns the policy label used in the barplot
@@ -176,33 +193,46 @@ def create_plot_filename(policy_set, number_of_games_played):
     return plot_path
 
 ############################################################################
-#the amount of games that will be played
-n = 1000
 
-#Choose a policy for each agent:
-    # RANDOM                  = 0     #Chooses a random possible move
-    # CHOOSE_OTHER_PLAYER     = 1     #Favors choosing an announcement about another players rather than himself
-    # CHOOSE_THEMSELVES 	  = 2     #Favors choosing an announcement about himself rather than about another player.
-    # ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
-    # ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
-policy_set = [Policies.ARGMAX, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
+def run_avg_experiment(amount=10):
+    #the amount of games that will be played
+    n = 20
 
-#Create a plot filename based on program input 
-# parameters (policies and amount of games played).
-plot_filename = create_plot_filename(policy_set, n)
+    #Whether you want to save the output barplot to a 
+    # file or not. It might overwrite an existing
+    # plot if you run the exact same settings as a
+    # previous experiment. It will be located in the
+    # folder "plots/"
+    do_save_figure = False
 
-#Set to true if you want a menu after each step
-# in the game. If set to False, you can run
-# many games and see results of them in a
-# barplot.
-show_menu_each_step = False
+    #Choose a policy for each agent:
+        # RANDOM                  = 0     #Chooses a random possible move
+        # CHOOSE_OTHER_PLAYER     = 1     #Favors choosing an announcement about another players rather than himself
+        # CHOOSE_THEMSELVES 	  = 2     #Favors choosing an announcement about himself rather than about another player.
+        # ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
+        # ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
+    policy_set = [Policies.RANDOM, Policies.RANDOM, Policies.RANDOM]
 
-#Run the game n times with the given policies
-# and store the results.
-win_results = run_game(n, policy_set, show_menu_each_step)
+    #Create a plot filename based on program input 
+    # parameters (policies and amount of games played).
+    plot_filename = create_plot_filename(policy_set, n)
 
-#Show a barplot of each player and policy, if
-# you play more than one game and have the
-# menu turned off.
-if not show_menu_each_step and n>1:
-    plot_bar_plot(win_results, plot_filename, do_save_figure=True)
+    #Set to true if you want a menu after each step
+    # in the game. If set to False, you can run
+    # many games and see results of them in a
+    # barplot.
+    show_menu_each_step = False
+
+    #Run the game n times with the given policies
+    # and store the results.
+    win_results = run_game(n, policy_set, show_menu_each_step)
+
+    #Show a barplot of each player and policy, if
+    # you play more than one game and have the
+    # menu turned off.
+    if not show_menu_each_step and n>1:
+        plot_bar_plot(win_results, plot_filename, do_save_figure)
+
+
+
+run_avg_experiment(1)

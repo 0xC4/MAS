@@ -314,6 +314,8 @@ class KnowledgeStructure:
     # I know one card of the target agent, with certainty.
     def knows_one_card_law(self, src_agent, target_agent):
 
+        # if src_agent == target_agent:
+        #     return False
         # Obtain valid worlds for the announcing agent
         announcing_agent_worlds = self.valid_worlds
 
