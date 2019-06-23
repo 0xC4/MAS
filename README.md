@@ -14,19 +14,24 @@ The program can be run from the 'MAS/' directory with the command: python3 main.
 
 ### Parameters:
 1. n
+
 Amount of games to be played.
 
 2. m
+
 Amount of experiments run. Default set to 10. Will result in an average win count over 10 experiments.
 A total of m*n games will be played.
 
 3. do_save_figure
+
 save the generated experiment to a figure
 
 4. do_show_figure
+
 Shows the figure at the end of the experiment.
 
 5. show_menu_each_step
+
 When set to 'True', at each step in the game the user can:
     1. Show possible announcements.
     2. Show Agent holdings.
