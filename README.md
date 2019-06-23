@@ -38,18 +38,18 @@ When set to 'True', at each step in the game the user can:
     *3*. Show all made announcements.
     *4*. Show Kripke Model
 
-###Choose a policy for each agent:    
-#### RANDOM
+### Agent Policies:    
+#### Random
 Chooses a random possible move
 
-#### CHOOSE_OTHER_PLAYER
+#### Choose Other Player
 Favors choosing an announcement about another players rather than himself
 
-#### CHOOSE_THEMSELVES
+#### Choose Themselves
 Favors choosing an announcement about himself rather than about another player.
 
-#### ARGMIN
+#### Argmin
 Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
 
-#### ARGMAX
+#### Argmax
 Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
