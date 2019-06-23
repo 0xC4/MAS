@@ -367,11 +367,11 @@
               <div class="item">
                   <div class="testimonial-item">
                     <div class="img-fluid">
-                      <img src="assets/img/results/plot_example.jpg" alt="">
+                      <img src="assets/img/results/games_100-choose_other_player-choose_themselves-argmax.png" alt="">
                     </div>
                     <div class="info">
-                      <h2>Figure 1</h2>
-                      <h3>Informative v. Choose self v. Choose self</h3>
+                      <h2>Figure 2</h2>
+                      <h3>Other v. Self v. Uninformative</h3>
                     </div>
                     <div class="content">
                       <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
@@ -382,11 +382,11 @@
                 <div class="item">
                     <div class="testimonial-item">
                       <div class="img-fluid">
-                        <img src="assets/img/results/plot_example.jpg" alt="">
+                        <img src="assets/img/results/games_100-random-choose_other_player-argmax.png" alt="">
                       </div>
                       <div class="info">
-                        <h2>Figure 2</h2>
-                        <h3>Informative v. Choose self v. Choose self</h3>
+                        <h2>Figure 3</h2>
+                        <h3>Random v. Other v. Uninformative</h3>
                       </div>
                       <div class="content">
                         <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
@@ -397,11 +397,11 @@
                   <div class="item">
                       <div class="testimonial-item">
                         <div class="img-fluid">
-                          <img src="assets/img/results/plot_example.jpg" alt="">
+                          <img src="assets/img/results/games_100-random-random-argmax.png" alt="">
                         </div>
                         <div class="info">
-                          <h2>Figure 3</h2>
-                          <h3>Informative v. Choose self v. Choose self</h3>
+                          <h2>Figure 4</h2>
+                          <h3>2x Random v. Uninformative</h3>
                         </div>
                         <div class="content">
                           <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
@@ -411,11 +411,11 @@
                     <div class="item">
                         <div class="testimonial-item">
                           <div class="img-fluid">
-                            <img src="assets/img/results/plot_example.jpg" alt="">
+                            <img src="assets/img/results/games_100-random-random-argmin.png" alt="">
                           </div>
                           <div class="info">
-                            <h2>Figure 3</h2>
-                            <h3>Informative v. Choose self v. Choose self</h3>
+                            <h2>Figure 5</h2>
+                            <h3>2x Random v. Informative</h3>
                           </div>
                           <div class="content">
                             <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
@@ -425,17 +425,31 @@
                       <div class="item">
                           <div class="testimonial-item">
                             <div class="img-fluid">
-                              <img src="assets/img/results/plot_example.jpg" alt="">
+                              <img src="assets/img/results/games_100-random-random-choose_other_player.png" alt="">
                             </div>
                             <div class="info">
-                              <h2>Figure 3</h2>
-                              <h3>Informative v. Choose self v. Choose self</h3>
+                              <h2>Figure 6</h2>
+                              <h3>2x Random v. Choose Other</h3>
                             </div>
                             <div class="content">
                               <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
                             </div>
                           </div>
                         </div>
+                        <div class="item">
+                            <div class="testimonial-item">
+                              <div class="img-fluid">
+                                <img src="assets/img/results/games_100-random-random-choose_themselves.png" alt="">
+                              </div>
+                              <div class="info">
+                                <h2>Figure 1</h2>
+                                <h3>2x Random v. Choose self</h3>
+                              </div>
+                              <div class="content">
+                                <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                              </div>
+                            </div>
+                          </div>
           </div>
         </div>
       </div>
@@ -446,9 +460,11 @@
               <div class="about-wrapper wow fadeInLeft" data-wow-delay="0.3s">
                 <div>
                     <p class="pp">
-                        Considering the nature of the game is aimed towards not giving away information that helps your opponents, we anticipated that the policies "Choose themselves" and "Most informative" will be losing strategies in the game.
-                        Additionally, we think that the "Random" policy can randomly give away too much information as well, leading to an opponent winning within the next two turns. 
-                        We think that the "Least informative" and "Choose other" strategies will be the best performing strategies, with "Least informative" outperforming "Choose other" by a small margin.
+                        We ran an experiment where all possible combinations of policies for 100 games, 10 times per combination, and averaged the win rates for each strategy.
+                        During the trials, the starting players were randomized.
+                        The results show that "Choose Themselves", and "Most Informative" strategies perform worse than the "Random" strategies (Figure 1 & 5).
+                        The "Choose Other", and "Least Informative" performed better than "Random" (Figure 4 & 6).
+                        Figure 2 and 3 show how the "Choose Other" and "Least Informative" strategy perform against each other, with different additional opponents.
                       </p>
 
                   <div class="site-heading">
@@ -457,9 +473,15 @@
                   </div>
                   <div class="content">
                     <p class="pp">
-                      Considering the nature of the game is aimed towards not giving away information that helps your opponents, we anticipated that the policies "Choose themselves" and "Most informative" will be losing strategies in the game.
-                      Additionally, we think that the "Random" policy can randomly give away too much information as well, leading to an opponent winning within the next two turns. 
-                      We think that the "Least informative" and "Choose other" strategies will be the best performing strategies, with "Least informative" outperforming "Choose other" by a small margin.
+                      It is clear from the results that different strategies in the game have a large influence on the win-rate of the agent. 
+                      The best strategy turned out to be the "Least Informative" strategy, likely because it prevents other players from winning in the following turns by making announcement that help no-one.
+                      The "Choose Other" player is only slightly outperformed by the "Least Informative" strategy.
+                      We think this is probably because most possible announcements that can be made about other players are also known by other players, unless they are specifically infered using their own cards.
+                      This results in this agent only helping other players sometimes.
+                      
+                      <br /><br/>
+                      All in all, the results are similar to our expectations, although we did not expect the worse performing policies to perform as bad as they did.
+                      If we could further investigate the game, we would like to see whether there are even better policies imaginable. We think that the current winning strategy is close to optimal for this game.
                     </p>
                   </div>
                 </div>
