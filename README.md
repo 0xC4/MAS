@@ -33,10 +33,10 @@ Shows the figure at the end of the experiment.
 5. show_menu_each_step
 
 When set to 'True', at each step in the game the user can:
-    1. Show possible announcements.
-    2. Show Agent holdings.
-    3. Show all made announcements.
-    4. Show Kripke Model
+    *1*. Show possible announcements.
+    *2*. Show Agent holdings.
+    *3*. Show all made announcements.
+    *4*. Show Kripke Model
 
 ###Choose a policy for each agent:    
 #### RANDOM
