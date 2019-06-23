@@ -4,7 +4,8 @@ MAS Project 2019
 In main.py at the bottom of the file the program parameters can be set.
 By default it will loop over all available policies and try all combinations against each other.
 
-The program can be run from the 'MAS/' directory with the command: python3 main.py
+The program can be run from the 'MAS/' directory with the command:
+python3 main.py
 
 ### Dependencies
 1. itertools
@@ -19,7 +20,7 @@ Amount of games to be played.
 
 2. m
 
-Amount of experiments run. Default set to 10. Will result in an average win count over 10 experiments.
+Amount of experiments run. When set to 10. Will result in an average win count over 10 experiments(where each experiment runs n games).
 A total of m*n games will be played.
 
 3. do_save_figure
