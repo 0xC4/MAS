@@ -76,7 +76,7 @@ class KnowledgeStructure:
         # are deleted from the valid worlds list. Needed for relations and plotting the model with world numbers..
         self.make_enumerated_worlds()
 
-    def __repr__(self):
+    def __str__(self):
         return """Model: 
         Amount agents:   {}
         Amount cards:    {}
