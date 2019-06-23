@@ -268,6 +268,7 @@ def run_avg_experiment(avg_amount, amount, policy_set, do_save_figure, do_show_f
 
 ########################################################
 #the amount of games that will be played
+#Change to another value to play more games.
 n = 1
 
 #average amount. There will be n number of games m times
@@ -281,7 +282,7 @@ m = 1
 # plot if you run the exact same settings as a
 # previous experiment. It will be located in the
 # folder "plots/"
-do_save_figure = True
+do_save_figure = False
 
 #whether you want to a see a barplot of an individual game
 do_show_figure = False
@@ -292,22 +293,38 @@ do_show_figure = False
 # barplot.
 show_menu_each_step = True
 
-#all available policies
 #Choose a policy for each agent:
     # RANDOM                       #Chooses a random possible move
     # CHOOSE_OTHER_PLAYER          #Favors choosing an announcement about another players rather than himself
     # CHOOSE_THEMSELVES 	       #Favors choosing an announcement about himself rather than about another player.
     # ARGMIN                       #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
     # ARGMAX                       #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
-all_policies = [Policies.RANDOM, Policies.ARGMAX, Policies.ARGMIN, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
+#These policies will be set for agent A, agent B and agent C.
+policy_set = [Policies.ARGMAX, Policies.CHOOSE_OTHER_PLAYER, Policies.ARGMIN]
 
-#loop over all policies: 
-for pol1 in all_policies:
-    for pol2 in all_policies:
-        for pol3 in all_policies:
-            policy_set = [pol1, pol2, pol3]
-            #Create a plot filename based on program input 
-            # parameters (policies and amount of games played).
-            plot_filename = create_plot_filename(policy_set, n)
-            
-            run_avg_experiment(m, n, policy_set, do_save_figure, do_show_figure, plot_filename, show_menu_each_step)
+
+#RUN n games and plots the results
+plot_filename = create_plot_filename(policy_set, n)
+win_results = run_game(n, policy_set, show_menu_each_step)
+plot_bar_plot(win_results, plot_filename, do_save_figure, do_show_figure)
+
+
+#RUN m amount of average experiments
+# set to parameter to true if you want average
+# error bar plots of all policies against
+# each other, however this may take a long time.
+# These results can also be viewed on our website.
+do_run_avg_experiment = False
+if do_run_avg_experiment:
+    all_policies = [Policies.RANDOM, Policies.ARGMAX, Policies.ARGMIN, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
+
+    #loop over all policies: 
+    for pol1 in all_policies:
+        for pol2 in all_policies:
+            for pol3 in all_policies:
+                policy_set = [pol1, pol2, pol3]
+                #Create a plot filename based on program input 
+                # parameters (policies and amount of games played).
+                plot_filename = create_plot_filename(policy_set, n)
+                
+                run_avg_experiment(m, n, policy_set, do_save_figure, do_show_figure, plot_filename, show_menu_each_step)
