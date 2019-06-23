@@ -268,11 +268,11 @@ def run_avg_experiment(avg_amount, amount, policy_set, do_save_figure, do_show_f
 
 ########################################################
 #the amount of games that will be played
-n = 100
+n = 1
 
 #average amount. There will be n number of games m times
 # This to ensure we can plot a barplot with standard deviation.
-m = 10
+m = 1
 ## AMOUNT OF GAMES PLAYED IN TOTAL : m*n 
 
 
@@ -290,15 +290,15 @@ do_show_figure = False
 # in the game. If set to False, you can run
 # many games and see results of them in a
 # barplot.
-show_menu_each_step = False
+show_menu_each_step = True
 
 #all available policies
 #Choose a policy for each agent:
-    # RANDOM                  = 0     #Chooses a random possible move
-    # CHOOSE_OTHER_PLAYER     = 1     #Favors choosing an announcement about another players rather than himself
-    # CHOOSE_THEMSELVES 	  = 2     #Favors choosing an announcement about himself rather than about another player.
-    # ARGMIN                  = 3     #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
-    # ARGMAX                  = 4     #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
+    # RANDOM                       #Chooses a random possible move
+    # CHOOSE_OTHER_PLAYER          #Favors choosing an announcement about another players rather than himself
+    # CHOOSE_THEMSELVES 	       #Favors choosing an announcement about himself rather than about another player.
+    # ARGMIN                       #Chooses the announcement that results in the lowest amount of possible worlds remaining after the announcement is made.
+    # ARGMAX                       #Chooses the announcement that results in the highest amount of possible worlds remaining afther the announcement is made.
 all_policies = [Policies.RANDOM, Policies.ARGMAX, Policies.ARGMIN, Policies.CHOOSE_OTHER_PLAYER, Policies.CHOOSE_THEMSELVES]
 
 #loop over all policies: 
@@ -310,4 +310,4 @@ for pol1 in all_policies:
             # parameters (policies and amount of games played).
             plot_filename = create_plot_filename(policy_set, n)
             
-            run_avg_experiment(m, n, policy_set,do_save_figure, do_show_figure, plot_filename, show_menu_each_step)
+            run_avg_experiment(m, n, policy_set, do_save_figure, do_show_figure, plot_filename, show_menu_each_step)
