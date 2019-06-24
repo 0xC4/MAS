@@ -7,7 +7,7 @@ By default it will loop over all available policies and try all combinations aga
 The program can be run from the 'MAS/' directory with the command:
 python3 main.py
 
-We also created a webpage for Number Pile. It can be found in the directory web/ as index.html. (web/index.html).
+We also created a webpage for Number Pile. It can be found in the directory web/ as index.html (web/index.html).
 
 ### Dependencies
 1. itertools

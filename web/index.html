@@ -106,13 +106,66 @@
     </header>
     <!-- Header Area wrapper End -->
 
-    <!-- Services Section Start -->
-    <section id="services" class="section-padding">
-      <div class="container">
-        <div class="section-header text-center">
-          <h2 class="section-title wow fadeInDown" data-wow-delay="0.3s">Allowed Possible Public Announcements</h2>
-          <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
+
+
+<!-- Services Section Start -->
+<section id="services" class="section-padding">
+    <div class="container">
+      <div class="section-header text-center">
+        <h2 class="section-title wow fadeInDown" data-wow-delay="0.3s">Game Logic</h2>
+        <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
+      </div>
+
+      <div class="content">
+          <p>
+            When an agent plays, the game it needs to know which worlds are possible, because we assume our agents to be perfect logicians, they must know all possible worlds.
+            Generating all possible worlds is an expensive operation, because each propositional atom is counted three times.
+            All three agents have two cards. This will result in 2^18 possible worlds, without world filtering.
+            Each agent could hold six cards, which represent a boolean value (either having the card or not having the card).
+            Three times six boolean values will result in 2^18 permutations of possible worlds.
+            Storing all these worlds would be heavy in memory, therefore we decided to filter out all nonsense world by applying
+            a state law to each generated world. A state law is defined as a base rule of the game.
+            Not more than one agent can have the same card and each agent can only have exaclty two cards.
+            Using a knowledge stucture as described in [2], enabled us to do many experiments, 
+            because computational cost is much lower than traditional methods, such as a Kripke model.
+          </p>
+          <p>
+            A knowledge structure has a vocubulary, a state law and observables. The vocubulary is the set of all propositional atoms, of which there are 18.
+            The state law states:
+
+            The set of observales is defined as all propositional atoms viewed by a player.
+            Each agent can see their own set of observables.
+            For example 'agent a' can observe six propositional atoms, [a_1, a_2, a_3, a_4, a_5, a_6], where each propositional atoms refers to having that card or not.
+            With a knowledge structure we can make inferences on a public announcement rather quickly.
+          </p>
+       
+        
+        <br />
+        <p><i><b>"No player can have less than two cards."</b></i></p>
+
+        <div class="col-lg-6 col-md-12 col-xs-12 wow fadeInRight" data-wow-delay="0.3s">
+          <img class="img" src="assets/img/equations/no-less-than-two.png" alt="" >
         </div>
+        <br />
+
+        <p><i><b>"Each player has no more than two cards."</b></i></p>
+
+        <div class="col-lg-6 col-md-12 col-xs-12 wow fadeInRight" data-wow-delay="0.6s">
+          <img class="img" src="assets/img/equations/no-more-than-two.png" alt="" >
+        </div>
+        <br />
+        
+        <p><i><b>"No two players can have the same cards."</b></i></p>
+
+        <div class="col-lg-6 col-md-12 col-xs-12 wow fadeInRight" data-wow-delay="0.9s">
+          <img class="img" src="assets/img/equations/no-same-card.png" alt="" >
+        </div>
+      </div>
+      <br />
+      <br />
+      <div class="section-header text-center">
+          <h2 class="section-title wow fadeInDown" data-wow-delay="0.3s">Public Announcements</h2>
+          <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
         <div class="row">
           <!-- Services item -->
           <div class="col-md-6 col-lg-4 col-xs-12">
@@ -194,6 +247,7 @@
       </div>
     </section>
     <!-- Services Section End -->
+
 
     <!-- About Section start -->
     <section id="statistics">
@@ -355,7 +409,7 @@
 <!-- Testimonial Section Start -->
 <section id="testimonial" class="testimonial section-padding">
     <div class="container">
-
+      
       <div class="section-header text-center">          
           <h2 class="section-title wow fadeInDown pp" data-wow-delay="0.3s">Results</h2>
           <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
@@ -374,7 +428,7 @@
                       <h3>Other v. Self v. Uninformative</h3>
                     </div>
                     <div class="content">
-                      <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                      <p class="description"></p>
                     </div>
                   </div>
                 </div>
@@ -389,7 +443,7 @@
                         <h3>Random v. Other v. Uninformative</h3>
                       </div>
                       <div class="content">
-                        <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                        <p class="description"></p>
                       </div>
                     </div>
                   </div>
@@ -404,7 +458,7 @@
                           <h3>2x Random v. Uninformative</h3>
                         </div>
                         <div class="content">
-                          <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                          <p class="description"></p>
                         </div>
                       </div>
                     </div>
@@ -418,7 +472,7 @@
                             <h3>2x Random v. Informative</h3>
                           </div>
                           <div class="content">
-                            <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                            <p class="description"></p>
                           </div>
                         </div>
                       </div>
@@ -432,7 +486,7 @@
                               <h3>2x Random v. Choose Other</h3>
                             </div>
                             <div class="content">
-                              <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                              <p class="description"></p>
                             </div>
                           </div>
                         </div>
@@ -446,7 +500,7 @@
                                 <h3>2x Random v. Choose self</h3>
                               </div>
                               <div class="content">
-                                <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                                <p class="description"></p>
                               </div>
                             </div>
                           </div>
@@ -513,7 +567,7 @@
                   <h3><a href="#">Quintin Y. van Lohuizen</a></h3>
                   <p>S2701782</p>
                 </div>
-                <p>Kripke model graph representation. Knowledge structure. World generation and filtering. Relations. Gathering Results.</p>
+                <p>Kripke model graph representation. Knowledge structure. World generation and filtering. Relations. Gathering Results. Agent Policies</p>
                 <ul class="social-icons">
                 </ul>
               </div>
@@ -531,7 +585,7 @@
                   <h3><a href="#">Christian Roest</a></h3>
                   <p>S2682192</p>
                 </div>
-                <p>Worked on relations and K-relation announcement. Knowledge structure. Possible world generation and filtering.</p>
+                <p>Worked on relations and K-relation announcement. Knowledge structure. Possible world generation and filtering. Agent Policies</p>
                 <ul class="social-icons">
                 </ul>
               </div>
@@ -549,7 +603,7 @@
                   <h3><a href="#">Floris van Beers</a></h3>
                   <p>s2197367</p>
                 </div>
-                <p>Implementation of agent policies, K-relations. Flow of the game. World Filtering</p>
+                <p>Implementation of agent policies, K-relations. World Filtering</p>
                 <ul class="social-icons">
                 </ul>
               </div>
@@ -754,7 +808,32 @@
       </div>   
     </footer>  -->
     <!-- Footer Section End -->
-
+    <!-- Footer Section Start -->
+    <section id="footer" class="section-padding bg-gray" > 
+      <div class="container">
+        <div class="section-header text-center">          
+          <h2 class="section-title wow fadeInDown" data-wow-delay="0.3s">References</h2>
+          <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
+        </div>
+        <div class="row">
+            <div class="content-left">
+            <div class="box-item wow fadeInLeft" data-wow-delay="0.3s">
+              <div class="text">
+                <h5>[1] Symbolic Model Checking for Dynamic Epistemic</h5>
+                <p><i>Van Benthem, J., Van Eijck, J., Gattinger, M., & Su, K. (2015, October). In International Workshop on Logic, Rationality and Interaction (pp. 366-378). Springer, Berlin, Heidelberg.</i></p>
+              </div>
+            </div>
+            <div class="box-item wow fadeInLeft" data-wow-delay="0.6s">
+              <div class="text">
+                <h5>[2] New Directions in Model Checking Dynamic Epistemic Logic</h5>
+                <p><i>Gattinger, B. R. M. (2018).</i></p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>   
+  </section> 
+  <!-- Footer Section End -->
 
     <div class="copyright-content">
         <p>Copyright © 2020 <a rel="nofollow" href="https://uideck.com">UIdeck</a> All Right Reserved</p>
