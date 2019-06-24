@@ -116,6 +116,7 @@
 
         <div class="content">
           <p>
+            When an agent plays, the game it needs to know which worlds are possible, because we assume our agents to be perfect logicians, they must know all possible worlds.
             Generating all possible worlds is an expensive operation, because each propositional atom is counted three times.
             All three agents have two cards. This will result in 2^18 possible worlds, without world filtering.
             Each agent could hold six cards, which represent a boolean value (either having the card or not having the card).
@@ -123,12 +124,17 @@
             Storing all these worlds would be heavy in memory, therefore we decided to filter out all nonsense world by applying
             a state law to each generated world. A state law is defined as a base rule of the game.
             Not more than one agent can have the same card and each agent can only have exaclty two cards.
-            Using a knowledge stucture as described in [Malvin], enabled us to do many experiments, 
+            Using a knowledge stucture as described in [2], enabled us to do many experiments, 
             because computational cost is much lower than traditional methods, such as a Kripke model.
           </p>
           <p>
             A knowledge structure has a vocubulary a state law and observables. The vocubulary is the set of all propositional atoms, of which there are 18.
-            The state law indicates:
+            The state law states:
+
+            The set of observales is defined as all propositional atoms viewed by a player.
+            Each agent can see their own set of observables.
+            For example 'agent a' can observe six propositional atoms, [a_1, a_2, a_3, a_4, a_5, a_6], where each propositional atoms refers to having that card or not.
+            With a knowledge structure we can make inferences on a public announcement rather quickly.
 
           </p>
         </div>
@@ -394,7 +400,7 @@
                       <h3>Other v. Self v. Uninformative</h3>
                     </div>
                     <div class="content">
-                      <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                      <p class="description"></p>
                     </div>
                   </div>
                 </div>
@@ -409,7 +415,7 @@
                         <h3>Random v. Other v. Uninformative</h3>
                       </div>
                       <div class="content">
-                        <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                        <p class="description"></p>
                       </div>
                     </div>
                   </div>
@@ -424,7 +430,7 @@
                           <h3>2x Random v. Uninformative</h3>
                         </div>
                         <div class="content">
-                          <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                          <p class="description"></p>
                         </div>
                       </div>
                     </div>
@@ -438,7 +444,7 @@
                             <h3>2x Random v. Informative</h3>
                           </div>
                           <div class="content">
-                            <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                            <p class="description"></p>
                           </div>
                         </div>
                       </div>
@@ -452,7 +458,7 @@
                               <h3>2x Random v. Choose Other</h3>
                             </div>
                             <div class="content">
-                              <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                              <p class="description"></p>
                             </div>
                           </div>
                         </div>
@@ -466,7 +472,7 @@
                                 <h3>2x Random v. Choose self</h3>
                               </div>
                               <div class="content">
-                                <p class="description">Praesent cursus nulla non arcu tempor, ut egestas elit tempus. In ac ex fermentum, gravida felis nec, tincidunt ligula.</p>
+                                <p class="description"></p>
                               </div>
                             </div>
                           </div>
