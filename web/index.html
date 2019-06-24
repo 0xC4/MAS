@@ -113,6 +113,26 @@
           <h2 class="section-title wow fadeInDown" data-wow-delay="0.3s">Allowed Possible Public Announcements</h2>
           <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
         </div>
+
+        <div class="content">
+          <p>
+            Generating all possible worlds is an expensive operation, because each propositional atom is counted three times.
+            All three agents have two cards. This will result in 2^18 possible worlds, without world filtering.
+            Each agent could hold six cards, which represent a boolean value (either having the card or not having the card).
+            Three times six boolean values will result in 2^18 permutations of possible worlds.
+            Storing all these worlds would be heavy in memory, therefore we decided to filter out all nonsense world by applying
+            a state law to each generated world. A state law is defined as a base rule of the game.
+            Not more than one agent can have the same card and each agent can only have exaclty two cards.
+            Using a knowledge stucture as described in [Malvin], enabled us to do many experiments, 
+            because computational cost is much lower than traditional methods, such as a Kripke model.
+          </p>
+          <p>
+            A knowledge structure has a vocubulary a state law and observables. The vocubulary is the set of all propositional atoms, of which there are 18.
+            The state law indicates:
+
+          </p>
+        </div>
+
         <div class="row">
           <!-- Services item -->
           <div class="col-md-6 col-lg-4 col-xs-12">
@@ -355,7 +375,7 @@
 <!-- Testimonial Section Start -->
 <section id="testimonial" class="testimonial section-padding">
     <div class="container">
-
+      
       <div class="section-header text-center">          
           <h2 class="section-title wow fadeInDown pp" data-wow-delay="0.3s">Results</h2>
           <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
@@ -754,7 +774,32 @@
       </div>   
     </footer>  -->
     <!-- Footer Section End -->
-
+    <!-- Footer Section Start -->
+    <section id="footer" class="section-padding bg-gray" > 
+      <div class="container">
+        <div class="section-header text-center">          
+          <h2 class="section-title wow fadeInDown" data-wow-delay="0.3s">References</h2>
+          <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
+        </div>
+        <div class="row">
+            <div class="content-left">
+            <div class="box-item wow fadeInLeft" data-wow-delay="0.3s">
+              <div class="text">
+                <h5>[1] Symbolic Model Checking for Dynamic Epistemic</h5>
+                <p><i>Van Benthem, J., Van Eijck, J., Gattinger, M., & Su, K. (2015, October). In International Workshop on Logic, Rationality and Interaction (pp. 366-378). Springer, Berlin, Heidelberg.</i></p>
+              </div>
+            </div>
+            <div class="box-item wow fadeInLeft" data-wow-delay="0.6s">
+              <div class="text">
+                <h5>[2] New Directions in Model Checking Dynamic Epistemic Logic</h5>
+                <p><i>Gattinger, B. R. M. (2018).</i></p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>   
+  </section> 
+  <!-- Footer Section End -->
 
     <div class="copyright-content">
         <p>Copyright © 2020 <a rel="nofollow" href="https://uideck.com">UIdeck</a> All Right Reserved</p>
