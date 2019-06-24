@@ -106,15 +106,17 @@
     </header>
     <!-- Header Area wrapper End -->
 
-    <!-- Services Section Start -->
-    <section id="services" class="section-padding">
-      <div class="container">
-        <div class="section-header text-center">
-          <h2 class="section-title wow fadeInDown" data-wow-delay="0.3s">Allowed Possible Public Announcements</h2>
-          <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
-        </div>
 
-        <div class="content">
+
+<!-- Services Section Start -->
+<section id="services" class="section-padding">
+    <div class="container">
+      <div class="section-header text-center">
+        <h2 class="section-title wow fadeInDown" data-wow-delay="0.3s">Game Logic</h2>
+        <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
+      </div>
+
+      <div class="content">
           <p>
             When an agent plays, the game it needs to know which worlds are possible, because we assume our agents to be perfect logicians, they must know all possible worlds.
             Generating all possible worlds is an expensive operation, because each propositional atom is counted three times.
@@ -135,10 +137,35 @@
             Each agent can see their own set of observables.
             For example 'agent a' can observe six propositional atoms, [a_1, a_2, a_3, a_4, a_5, a_6], where each propositional atoms refers to having that card or not.
             With a knowledge structure we can make inferences on a public announcement rather quickly.
-
           </p>
-        </div>
+       
+        
+        <br />
+        <p><i><b>"No player can have less than two cards."</b></i></p>
 
+        <div class="col-lg-6 col-md-12 col-xs-12 wow fadeInRight" data-wow-delay="0.3s">
+          <img class="img" src="assets/img/equations/no-less-than-two.png" alt="" >
+        </div>
+        <br />
+
+        <p><i><b>"Each player has no more than two cards."</b></i></p>
+
+        <div class="col-lg-6 col-md-12 col-xs-12 wow fadeInRight" data-wow-delay="0.6s">
+          <img class="img" src="assets/img/equations/no-more-than-two.png" alt="" >
+        </div>
+        <br />
+        
+        <p><i><b>"No two players can have the same cards."</b></i></p>
+
+        <div class="col-lg-6 col-md-12 col-xs-12 wow fadeInRight" data-wow-delay="0.9s">
+          <img class="img" src="assets/img/equations/no-same-card.png" alt="" >
+        </div>
+      </div>
+      <br />
+      <br />
+      <div class="section-header text-center">
+          <h2 class="section-title wow fadeInDown" data-wow-delay="0.3s">Public Announcements</h2>
+          <div class="shape wow fadeInDown" data-wow-delay="0.3s"></div>
         <div class="row">
           <!-- Services item -->
           <div class="col-md-6 col-lg-4 col-xs-12">
@@ -220,6 +247,7 @@
       </div>
     </section>
     <!-- Services Section End -->
+
 
     <!-- About Section start -->
     <section id="statistics">
